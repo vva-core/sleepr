@@ -12,3 +12,14 @@ generator client {
 datasource db {
     provider = "postgresql"
 }
+
+model Reservation {
+    id        String   @id @default(cuid())
+    startDate DateTime
+    endDate   DateTime
+    userId    String
+    placeId   String
+    invoiceId String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
