@@ -1,0 +1,11 @@
+services:
+  reservations:
+    build:
+      context: .
+      dockerfile: apps/reservations/Dockerfile
+      target: development
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '3000:3000'
+    command: yarn start:dev reservations
