@@ -11,7 +11,7 @@ import { ConfigModule } from '@nestjs/config';
     LoggerModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['.env.local'],
+      envFilePath: ['apps/reservations/.env.local', 'apps/reservations/.env'],
     }),
   ],
   controllers: [ReservationsController],

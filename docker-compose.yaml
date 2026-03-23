@@ -8,9 +8,24 @@ services:
       - .:/usr/src/app
     ports:
       - '3000:3000'
-    command: yarn start:dev reservations
+    command: sh -c "npx prisma migrate deploy && yarn start:dev reservations"
     env_file:
       - apps/reservations/.env
+    depends_on:
+      - postgres
+
+  auth:
+    build:
+      context: .
+      dockerfile: apps/auth/Dockerfile
+      target: development
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '3001:3001'
+    command: sh -c "npx prisma migrate deploy && yarn start:dev auth"
+    env_file:
+      - apps/auth/.env
     depends_on:
       - postgres
 

@@ -1,8 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { User } from './user/entities/user.entity';
+import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
+import { TokenPayload } from './user/interfaces/token-payload.interface';
 
 @Injectable()
 export class AuthService {
-  getHello(): string {
-    return 'Hello World!';
+  constructor(private readonly jwtService: JwtService) {}
+
+  async login(user: User, response: Response) {
+    const payload: TokenPayload = { sub: user.id, email: user.email };
+
+    const token = await this.jwtService.signAsync(payload);
+
+    response.cookie('Authentication', token, {
+      httpOnly: true,
+    });
+
+    return { token };
   }
 }
