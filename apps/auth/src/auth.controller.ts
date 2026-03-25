@@ -4,6 +4,8 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { User } from './user/entities/user.entity';
 import { AuthService } from './auth.service';
 import { type Response } from 'express';
+import { MessagePattern } from '@nestjs/microservices';
+import { JwtGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -16,5 +18,11 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ) {
     return this.authService.login(user, response);
+  }
+
+  @UseGuards(JwtGuard)
+  @MessagePattern('authenticate')
+  authenticate(user: User) {
+    return user;
   }
 }
