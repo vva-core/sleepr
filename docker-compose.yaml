@@ -29,6 +29,21 @@ services:
     depends_on:
       - postgres
 
+  payments:
+    build:
+      context: .
+      dockerfile: apps/payments/Dockerfile
+      target: development
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '3002:3002'
+    command: sh -c "npx prisma migrate deploy && yarn start:dev payments"
+    env_file:
+      - apps/payments/.env
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres:16
     env_file:

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { IBaseRepository, PrismaService } from '@app/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { User } from '@app/common/prisma/generated/prisma';
 
 @Injectable()
 export class UserRepository implements IBaseRepository<

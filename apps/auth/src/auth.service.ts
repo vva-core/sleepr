@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { TokenPayload } from './user/interfaces/token-payload.interface';
+import { User } from '@app/common/prisma/generated/prisma';
 
 @Injectable()
 export class AuthService {

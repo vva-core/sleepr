@@ -13,15 +13,32 @@ datasource db {
     provider = "postgresql"
 }
 
+enum ReservationStatus {
+    PENDING
+    CONFIRMED
+    CANCELLED
+    COMPLETED
+}
+
+enum PaymentStatus {
+    PENDING
+    SUCCEEDED
+    FAILED
+    CANCELLED
+}
+
 model Reservation {
-    id        String   @id @default(cuid())
+    id        String            @id @default(cuid())
     startDate DateTime
     endDate   DateTime
     userId    String
     placeId   String
-    invoiceId String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime          @default(now())
+    updatedAt DateTime          @updatedAt
+    status    ReservationStatus @default(PENDING)
+
+    user     User      @relation(fields: [userId], references: [id])
+    payments Payments?
 }
 
 model User {
@@ -30,4 +47,17 @@ model User {
     password  String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    reservations Reservation[]
+}
+
+model Payments {
+    id                    String        @id @default(cuid())
+    reservationId         String        @unique
+    amount                Float
+    status                PaymentStatus @default(PENDING)
+    createdAt             DateTime      @default(now())
+    stripePaymentIntentId String
+
+    reservation Reservation @relation(fields: [reservationId], references: [id])
 }

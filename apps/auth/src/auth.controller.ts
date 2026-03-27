@@ -1,11 +1,11 @@
 import { CurrentUser } from '@app/common';
 import { Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { User } from './user/entities/user.entity';
 import { AuthService } from './auth.service';
 import { type Response } from 'express';
 import { MessagePattern } from '@nestjs/microservices';
 import { JwtGuard } from './guards/jwt-auth.guard';
+import type { User } from '@app/common/prisma/generated/prisma';
 
 @Controller('auth')
 export class AuthController {
@@ -22,7 +22,7 @@ export class AuthController {
 
   @UseGuards(JwtGuard)
   @MessagePattern('authenticate')
-  authenticate(user: User) {
+  authenticate(@CurrentUser() user: User) {
     return user;
   }
 }

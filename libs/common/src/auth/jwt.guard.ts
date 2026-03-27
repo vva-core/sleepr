@@ -5,10 +5,10 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { User } from 'apps/auth/src/user/entities/user.entity';
 import { catchError, map, Observable, of } from 'rxjs';
 import { AUTH_SERVICE } from '../consts';
 import { LoggerService } from '../logger/logger.service';
+import { User } from '../prisma/generated/prisma';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -34,6 +34,7 @@ export class JwtAuthGuard implements CanActivate {
       })
       .pipe(
         map((user: User) => {
+          this.logger.log(`Authenticated user: ${user.id}`);
           request.user = user;
           return true;
         }),
