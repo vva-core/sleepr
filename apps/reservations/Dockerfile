@@ -7,6 +7,7 @@ COPY yarn.lock ./
 COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 COPY apps/reservations/package.json apps/reservations/package.json
+COPY prisma ./prisma
 
 COPY apps/reservations apps/reservations
 COPY libs libs
@@ -14,6 +15,7 @@ COPY libs libs
 RUN yarn install
 RUN cd apps/reservations && yarn install
 
+RUN npx prisma generate
 RUN yarn build reservations
 
 FROM node:22-alpine AS production

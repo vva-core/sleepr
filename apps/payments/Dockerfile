@@ -7,6 +7,7 @@ COPY yarn.lock ./
 COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 COPY apps/payments/package.json apps/payments/package.json
+COPY prisma ./prisma
 
 COPY apps/payments apps/payments
 COPY libs libs
@@ -14,6 +15,7 @@ COPY libs libs
 RUN yarn install
 RUN cd apps/payments && yarn install
 
+RUN npx prisma generate
 RUN yarn build payments
 
 FROM node:22-alpine AS production
