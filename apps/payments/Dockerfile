@@ -24,11 +24,7 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 COPY --from=development /usr/src/app/dist ./dist
-COPY package.json ./
-COPY yarn.lock ./
-COPY apps/payments/package.json ./apps/payments/package.json
-
-RUN yarn install --production
-RUN cd apps/payments && yarn install --production
+COPY --from=development /usr/src/app/node_modules ./node_modules
+COPY --from=development /usr/src/app/apps/payments/node_modules ./apps/payments/node_modules
 
 CMD ["node", "dist/apps/payments/main.js"]

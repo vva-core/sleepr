@@ -28,7 +28,8 @@ COPY package.json ./
 COPY yarn.lock ./
 COPY apps/reservations/package.json ./apps/reservations/package.json
 
-RUN yarn install --production
-RUN cd apps/reservations && yarn install --production
+COPY --from=development /usr/src/app/dist ./dist
+COPY --from=development /usr/src/app/node_modules ./node_modules
+COPY --from=development /usr/src/app/apps/reservations/node_modules ./apps/reservations/node_modules
 
 CMD ["node", "dist/apps/reservations/main.js"]
