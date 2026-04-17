@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: auth
+  name: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: auth
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      containers:
+        - image: 145023132887.dkr.ecr.eu-west-2.amazonaws.com/sleepr-auth
+          name: auth
+          env:
+            - name: HTTP_PORT
+              value: '3001'
+            - name: TCP_PORT
+              value: '3002'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-url
+                  key: databaseUrl
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: jwtSecret
+            - name: JWT_EXPIRY
+              value: '3600s'
+          ports:
+            - containerPort: 3001
+            - containerPort: 3002

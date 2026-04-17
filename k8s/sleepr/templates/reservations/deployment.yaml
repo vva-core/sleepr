@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: reservations
+  name: reservations
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reservations
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: reservations
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      containers:
+        - image: 145023132887.dkr.ecr.eu-west-2.amazonaws.com/sleepr-reservations:latest
+          name: reservations
+          env:
+            - name: PORT
+              value: '3000'
+            - name: PAYMENTS_HOST
+              value: payments
+            - name: PAYMENTS_PORT
+              value: '3003'
+            - name: AUTH_HOST
+              value: auth
+            - name: AUTH_PORT
+              value: '3002'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-url
+                  key: databaseUrl
+          ports:
+            - containerPort: 3000

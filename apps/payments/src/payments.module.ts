@@ -15,8 +15,8 @@ import { PaymentsRepository } from './payments.repository';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        HTTP_PORT: Joi.number().required(),
-        TCP_PORT: Joi.number().required(),
+        PORT: Joi.number().required(),
+        DATABASE_URL: Joi.string().required(),
         STRIPE_SECRET_KEY: Joi.string().required(),
       }),
     }),

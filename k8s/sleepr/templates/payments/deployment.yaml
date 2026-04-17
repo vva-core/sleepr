@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: payments
+  name: payments
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: payments
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      containers:
+        - image: 145023132887.dkr.ecr.eu-west-2.amazonaws.com/sleepr-payments
+          name: payments
+          env:
+            - name: PORT
+              value: '3003'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: database-url
+                  key: databaseUrl
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-secret
+                  key: stripeSecretKey
+          ports:
+            - containerPort: 3003
