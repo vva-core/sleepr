@@ -6,6 +6,11 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '15'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '3'
 spec:
   rules:
     - http:
@@ -17,7 +22,7 @@ spec:
                 name: reservations
                 port:
                   number: 3000
-          - path: /auth/*
+          - path: /auth
             pathType: Prefix
             backend:
               service:

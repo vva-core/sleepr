@@ -1,4 +1,4 @@
-import { DatabaseModule, LoggerModule } from '@app/common';
+import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
 import { AUTH_SERVICE, PAYMENTS_SERVICE } from '@app/common/consts';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -10,6 +10,7 @@ import { ReservationsService } from './reservations.service';
 @Module({
   imports: [
     DatabaseModule,
+    HealthModule,
     LoggerModule,
     ConfigModule.forRoot({
       isGlobal: true,

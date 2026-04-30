@@ -6,7 +6,7 @@ import { UserService } from './user/user.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import Joi from 'joi';
-import { DatabaseModule, LoggerModule } from '@app/common';
+import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
 import { UserRepository } from './user/user.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
@@ -14,6 +14,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 @Module({
   imports: [
     DatabaseModule,
+    HealthModule,
     LoggerModule,
     UserModule,
     ConfigModule.forRoot({
