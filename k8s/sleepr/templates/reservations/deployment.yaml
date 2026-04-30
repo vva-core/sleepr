@@ -13,14 +13,13 @@ spec:
   strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: reservations
     spec:
       imagePullSecrets:
         - name: ecr-secret
       containers:
-        - image: 145023132887.dkr.ecr.eu-west-2.amazonaws.com/sleepr-reservations:latest
+        - image: 805102730154.dkr.ecr.eu-north-1.amazonaws.com/sleepr/reservations:latest
           name: reservations
           env:
             - name: PORT
