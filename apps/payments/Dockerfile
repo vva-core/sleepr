@@ -8,6 +8,7 @@ COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 COPY apps/payments/package.json apps/payments/package.json
 COPY prisma ./prisma
+COPY prisma.config.ts prisma.config.ts
 
 COPY apps/payments apps/payments
 COPY libs libs
@@ -29,5 +30,6 @@ COPY --from=development /usr/src/app/dist ./dist
 COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY --from=development /usr/src/app/apps/payments/node_modules ./apps/payments/node_modules
 COPY --from=development /usr/src/app/prisma ./prisma
+COPY --from=development /usr/src/app/prisma.config.ts ./prisma.config.ts
 
 CMD ["node", "dist/apps/payments/main.js"]

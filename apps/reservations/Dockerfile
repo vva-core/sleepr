@@ -8,6 +8,7 @@ COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 COPY apps/reservations/package.json apps/reservations/package.json
 COPY prisma ./prisma
+COPY prisma.config.ts prisma.config.ts
 
 COPY apps/reservations apps/reservations
 COPY libs libs
@@ -34,5 +35,6 @@ COPY --from=development /usr/src/app/dist ./dist
 COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY --from=development /usr/src/app/apps/reservations/node_modules ./apps/reservations/node_modules
 COPY --from=development /usr/src/app/prisma ./prisma
+COPY --from=development /usr/src/app/prisma.config.ts ./prisma.config.ts
 
 CMD ["node", "dist/apps/reservations/main.js"]

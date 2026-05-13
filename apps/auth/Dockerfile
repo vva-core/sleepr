@@ -8,6 +8,7 @@ COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 COPY apps/auth/package.json apps/auth/package.json
 COPY prisma ./prisma
+COPY prisma.config.ts prisma.config.ts
 
 COPY apps/auth apps/auth
 COPY libs libs
@@ -29,5 +30,6 @@ COPY --from=development /usr/src/app/dist ./dist
 COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY --from=development /usr/src/app/apps/auth/node_modules ./apps/auth/node_modules
 COPY --from=development /usr/src/app/prisma ./prisma
+COPY --from=development /usr/src/app/prisma.config.ts ./prisma.config.ts
 
 CMD ["node", "dist/apps/auth/main.js"]
