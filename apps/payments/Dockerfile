@@ -28,5 +28,6 @@ ENV NODE_ENV=${NODE_ENV}
 COPY --from=development /usr/src/app/dist ./dist
 COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY --from=development /usr/src/app/apps/payments/node_modules ./apps/payments/node_modules
+COPY --from=development /usr/src/app/prisma ./prisma
 
 CMD ["node", "dist/apps/payments/main.js"]

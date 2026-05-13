@@ -1,0 +1,59 @@
+services:
+  e2e:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./tests:/usr/src/app/tests
+    depends_on:
+      reservations:
+        condition: service_healthy
+      auth:
+        condition: service_started
+      payments:
+        condition: service_started
+      postgres:
+        condition: service_started
+
+  reservations:
+    image: 805102730154.dkr.ecr.eu-north-1.amazonaws.com/sleepr/reservations
+    ports:
+      - '3000:3000'
+    command: sh -c "npx prisma migrate deploy && node dist/apps/reservations/main"
+    env_file:
+      - ../apps/reservations/.env
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:3000/health']
+      interval: 300s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  auth:
+    image: 805102730154.dkr.ecr.eu-north-1.amazonaws.com/sleepr/auth
+    ports:
+      - '3001:3001'
+    command: sh -c "npx prisma migrate deploy && node dist/apps/auth/main"
+    env_file:
+      - ../apps/auth/.env
+    depends_on:
+      - postgres
+
+  payments:
+    image: 805102730154.dkr.ecr.eu-north-1.amazonaws.com/sleepr/payments
+    ports:
+      - '3002:3002'
+    command: sh -c "npx prisma migrate deploy && node dist/apps/payments/main"
+    env_file:
+      - ../apps/payments/.env
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+    env_file:
+      - ../.env
+    ports:
+      - '5432:5432'

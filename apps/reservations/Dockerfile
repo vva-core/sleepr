@@ -33,5 +33,6 @@ COPY apps/reservations/package.json ./apps/reservations/package.json
 COPY --from=development /usr/src/app/dist ./dist
 COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY --from=development /usr/src/app/apps/reservations/node_modules ./apps/reservations/node_modules
+COPY --from=development /usr/src/app/prisma ./prisma
 
 CMD ["node", "dist/apps/reservations/main.js"]
