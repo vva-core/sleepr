@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { JwtGuard } from '../guards/jwt-auth.guard';
@@ -18,5 +18,11 @@ export class UserController {
   @Get()
   getUser(@CurrentUser() user: User) {
     return user;
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete()
+  deleteUser(@CurrentUser() user: User) {
+    return this.userService.deleteUser(user.id);
   }
 }
