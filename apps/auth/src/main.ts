@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { ValidationPipe } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   console.log('Starting Auth Service...');
@@ -25,6 +26,7 @@ async function bootstrap() {
     }),
   );
   app.useLogger(app.get(Logger));
+  app.use(cookieParser());
   await app.startAllMicroservices();
   await app.listen(configService.getOrThrow('HTTP_PORT'));
 }
