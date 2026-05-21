@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { type Response } from 'express';
 import { MessagePattern } from '@nestjs/microservices';
 import { JwtGuard } from './guards/jwt-auth.guard';
-import type { User } from '@app/common/prisma/generated/prisma';
+import { User } from './user/entity/user.entity';
 
 @Controller('auth')
 export class AuthController {

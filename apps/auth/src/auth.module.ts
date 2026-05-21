@@ -7,13 +7,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import Joi from 'joi';
 import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
-import { UserRepository } from './user/user.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { UserRepository } from './user/user.new.repository';
+import { User } from './user/entity/user.entity';
 
 @Module({
   imports: [
     DatabaseModule,
+    DatabaseModule.forFeature([User]),
     HealthModule,
     LoggerModule,
     UserModule,

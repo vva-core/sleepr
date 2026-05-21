@@ -16,8 +16,12 @@ import { PaymentsRepository } from './payments.repository';
       isGlobal: true,
       validationSchema: Joi.object({
         PORT: Joi.number().required(),
-        DATABASE_URL: Joi.string().required(),
         STRIPE_SECRET_KEY: Joi.string().required(),
+        MYSQL_HOST: Joi.string().required(),
+        MYSQL_PORT: Joi.number().required(),
+        MYSQL_USER: Joi.string().required(),
+        MYSQL_PASSWORD: Joi.string().required(),
+        MYSQL_DATABASE: Joi.string().required(),
       }),
     }),
   ],

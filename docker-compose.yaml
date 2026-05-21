@@ -8,11 +8,11 @@ services:
       - .:/usr/src/app
     ports:
       - '3000:3000'
-    command: sh -c "npx prisma migrate deploy && yarn start:dev reservations"
+    command: yarn start:dev reservations
     env_file:
       - apps/reservations/.env
     depends_on:
-      - postgres
+      - mysql
 
   auth:
     build:
@@ -23,11 +23,11 @@ services:
       - .:/usr/src/app
     ports:
       - '3001:3001'
-    command: sh -c "npx prisma migrate deploy && yarn start:dev auth"
+    command: yarn start:dev auth
     env_file:
       - apps/auth/.env
     depends_on:
-      - postgres
+      - mysql
 
   payments:
     build:
@@ -38,28 +38,20 @@ services:
       - .:/usr/src/app
     ports:
       - '3002:3002'
-    command: sh -c "npx prisma migrate deploy && yarn start:dev payments"
+    command: yarn start:dev payments
     env_file:
       - apps/payments/.env
     depends_on:
-      - postgres
+      - mysql
 
-  postgres:
-    image: postgres:16
+  mysql:
+    image: mysql
     env_file:
       - .env
     ports:
-      - '5432:5432'
+      - '3306:3306'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-  pgadmin:
-    image: dpage/pgadmin4
-    env_file:
-      - .env
-    ports:
-      - '8080:80'
-    depends_on:
-      - postgres
+      - mysql_data:/var/lib/mysql
 
 volumes:
-  postgres_data:
+  mysql_data:

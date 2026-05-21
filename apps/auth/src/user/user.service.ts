@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserRepository } from './user.repository';
+import { UserRepository } from './user.new.repository';
 
 @Injectable()
 export class UserService {
@@ -10,6 +10,9 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
+    console.log(`Creating user with email: ${createUserDto.email}`);
+    console.log(`Hashed password: ${hashedPassword}`);
+
     return await this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
@@ -17,7 +20,12 @@ export class UserService {
   }
 
   async validateUser(email: string, password: string) {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this.userRepository.findOne({ email });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -27,13 +35,11 @@ export class UserService {
     return user;
   }
 
-  async getUser(id: string) {
-    return await this.userRepository.findOne(id);
+  async getUser(id: number) {
+    return await this.userRepository.findOne({ id });
   }
 
-  async deleteUser(id: string) {
-    console.log(`Deleting user with id: ${id}`);
-
+  async deleteUser(id: number) {
     return await this.userRepository.delete(id);
   }
 }

@@ -23,6 +23,6 @@ export class UserController {
   @UseGuards(JwtGuard)
   @Delete()
   deleteUser(@CurrentUser() user: User) {
-    return this.userService.deleteUser(user.id);
+    return this.userService.deleteUser(+user.id);
   }
 }
