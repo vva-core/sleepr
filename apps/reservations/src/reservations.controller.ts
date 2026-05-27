@@ -1,4 +1,6 @@
+import { CurrentUser, PaymentDto } from '@app/common';
 import { JwtAuthGuard } from '@app/common/auth';
+import { PAYMENTS_MESSAGES, PAYMENTS_SERVICE } from '@app/common/consts';
 import {
   Body,
   Controller,
@@ -6,17 +8,13 @@ import {
   Get,
   Inject,
   Param,
-  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { CreateReservationDto } from './dto/create-reservation.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
-import { ReservationsService } from './reservations.service';
-import { CurrentUser, PaymentDto } from '@app/common';
-import type { User } from '@app/common/prisma/generated/prisma';
 import { ClientProxy } from '@nestjs/microservices';
-import { PAYMENTS_SERVICE, PAYMENTS_MESSAGES } from '@app/common/consts';
+import { User } from '@app/common';
+import { CreateReservationDto } from './dto/create-reservation.dto';
+import { ReservationsService } from './reservations.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('reservations')
@@ -60,14 +58,6 @@ export class ReservationsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reservationsService.findOne(id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateReservationDto: UpdateReservationDto,
-  ) {
-    return this.reservationsService.update(id, updateReservationDto);
   }
 
   @Delete(':id')

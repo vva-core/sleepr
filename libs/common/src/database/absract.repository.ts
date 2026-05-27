@@ -1,4 +1,9 @@
-import { FindOneOptions, Repository } from 'typeorm';
+import {
+  FindOptionsRelations,
+  FindOptionsSelect,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 
 export abstract class AbstractRepository<T extends AbstractEntity<T>> {
@@ -10,16 +15,27 @@ export abstract class AbstractRepository<T extends AbstractEntity<T>> {
     return await this.entityRepo.save(newEntity);
   }
 
-  async findOne(where: Partial<T>): Promise<T | null> {
-    return await this.entityRepo.findOne({ where } as FindOneOptions<T>);
+  async findOne(
+    where: FindOptionsWhere<T>,
+    relations?: FindOptionsRelations<T>,
+    select?: FindOptionsSelect<T>,
+  ): Promise<T | null> {
+    return await this.entityRepo.findOne({
+      where,
+      relations,
+      select,
+    });
   }
 
   async findAll(): Promise<T[]> {
-    return await this.entityRepo.find();
+    return await this.entityRepo.find({
+      relations: {},
+    });
   }
 
   update(_id: number, _entity: T): Promise<T | null> {
     console.log(_id, _entity);
+
     throw new Error('Method not implemented.');
   }
 

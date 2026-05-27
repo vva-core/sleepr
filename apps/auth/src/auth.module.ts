@@ -10,12 +10,12 @@ import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { UserRepository } from './user/user.new.repository';
-import { User } from './user/entity/user.entity';
+import { User, Reservation } from '@app/common';
 
 @Module({
   imports: [
     DatabaseModule,
-    DatabaseModule.forFeature([User]),
+    DatabaseModule.forFeature([User, Reservation]),
     HealthModule,
     LoggerModule,
     UserModule,

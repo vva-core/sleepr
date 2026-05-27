@@ -1,15 +1,22 @@
-import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
+import {
+  DatabaseModule,
+  HealthModule,
+  LoggerModule,
+  User,
+  Reservation,
+} from '@app/common';
 import { AUTH_SERVICE, PAYMENTS_SERVICE } from '@app/common/consts';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ReservationsController } from './reservations.controller';
-import { ReservationsRepository } from './reservations.repository';
 import { ReservationsService } from './reservations.service';
+import { ReservationsRepository } from './reservations.new.repository';
 
 @Module({
   imports: [
     DatabaseModule,
+    DatabaseModule.forFeature([Reservation, User]),
     HealthModule,
     LoggerModule,
     ConfigModule.forRoot({

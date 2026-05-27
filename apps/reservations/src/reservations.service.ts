@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateReservationDto } from './dto/create-reservation.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
-import { ReservationsRepository } from './reservations.repository';
-import { User } from '@app/common/prisma/generated/prisma';
+import { ReservationsRepository } from './reservations.new.repository';
+import { User } from '@app/common';
 
 @Injectable()
 export class ReservationsService {
@@ -13,7 +12,7 @@ export class ReservationsService {
   create(createReservationDto: CreateReservationDto, user: User) {
     return this.reservationsRepository.create({
       ...createReservationDto,
-      userId: user.id,
+      user,
     });
   }
 
@@ -22,14 +21,14 @@ export class ReservationsService {
   }
 
   findOne(id: string) {
-    return this.reservationsRepository.findOne(id);
-  }
-
-  update(id: string, updateReservationDto: UpdateReservationDto) {
-    return this.reservationsRepository.update(id, updateReservationDto);
+    return this.reservationsRepository.findOne(
+      { id: +id },
+      { user: true },
+      { user: { email: true, id: true } },
+    );
   }
 
   remove(id: string) {
-    return this.reservationsRepository.delete(id);
+    return this.reservationsRepository.delete(+id);
   }
 }

@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { type Response } from 'express';
 import { MessagePattern } from '@nestjs/microservices';
 import { JwtGuard } from './guards/jwt-auth.guard';
-import { User } from './user/entity/user.entity';
+import { User } from '@app/common';
 
 @Controller('auth')
 export class AuthController {
