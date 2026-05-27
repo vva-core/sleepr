@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { JwtGuard } from '../guards/jwt-auth.guard';
 import { CurrentUser } from '@app/common';
-import type { User } from '@app/common/prisma/generated/prisma';
+import { User } from '@app/common';
 
 @Controller('user')
 export class UserController {

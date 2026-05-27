@@ -8,7 +8,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { catchError, map, Observable, of } from 'rxjs';
 import { AUTH_SERVICE } from '../consts';
 import { LoggerService } from '../logger/logger.service';
-import { User } from '../prisma/generated/prisma';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

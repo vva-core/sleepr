@@ -1,14 +1,9 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from '../prisma/prisma.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 
-export * from './base.interface';
-export * from '../prisma/prisma.service';
-
 @Module({
   imports: [
-    PrismaModule,
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
@@ -23,7 +18,6 @@ export * from '../prisma/prisma.service';
       inject: [ConfigService],
     }),
   ],
-  exports: [PrismaModule],
 })
 export class DatabaseModule {
   static forFeature(entities: any[]) {
