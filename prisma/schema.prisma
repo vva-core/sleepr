@@ -47,6 +47,7 @@ model User {
     password  String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    roles     String[] @default(["user"])
 
     reservations Reservation[]
 }

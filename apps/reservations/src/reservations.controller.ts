@@ -13,12 +13,14 @@ import {
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationsService } from './reservations.service';
-import { CurrentUser, PaymentDto } from '@app/common';
+import { CurrentUser, PaymentDto, Roles } from '@app/common';
 import type { User } from '@app/common/prisma/generated/prisma';
 import { ClientProxy } from '@nestjs/microservices';
 import { PAYMENTS_SERVICE, PAYMENTS_MESSAGES } from '@app/common/consts';
+import { RoleGuard } from '@app/common/guards';
 
-@UseGuards(JwtAuthGuard)
+@Roles('user')
+@UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('reservations')
 export class ReservationsController {
   constructor(
@@ -62,6 +64,7 @@ export class ReservationsController {
     return this.reservationsService.findOne(id);
   }
 
+  @Roles('admin')
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -70,6 +73,7 @@ export class ReservationsController {
     return this.reservationsService.update(id, updateReservationDto);
   }
 
+  @Roles('admin')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.reservationsService.remove(id);
