@@ -6,6 +6,7 @@ import { type Response } from 'express';
 import { MessagePattern } from '@nestjs/microservices';
 import { JwtGuard } from './guards/jwt-auth.guard';
 import type { User } from '@app/common/prisma/generated/prisma';
+import { AUTH_MESSAGES } from '@app/common/consts';
 
 @Controller('auth')
 export class AuthController {
@@ -21,7 +22,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtGuard)
-  @MessagePattern('authenticate')
+  @MessagePattern(AUTH_MESSAGES.AUTHENTICATE)
   authenticate(@CurrentUser() user: User) {
     return user;
   }

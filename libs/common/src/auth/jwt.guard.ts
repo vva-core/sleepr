@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { catchError, map, Observable, of } from 'rxjs';
-import { AUTH_SERVICE } from '../consts';
+import { AUTH_MESSAGES, AUTH_SERVICE } from '../consts';
 import { LoggerService } from '../logger/logger.service';
 import { User } from '../prisma/generated/prisma';
 
@@ -25,11 +25,12 @@ export class JwtAuthGuard implements CanActivate {
     const jwt = request.cookies['Authentication'];
 
     if (!jwt) {
+      this.logger.warn('No JWT found');
       return false;
     }
 
     return this.authClient
-      .send('authenticate', {
+      .send(AUTH_MESSAGES.AUTHENTICATE, {
         Authentication: jwt,
       })
       .pipe(

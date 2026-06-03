@@ -60,6 +60,13 @@ services:
       - '8080:80'
     depends_on:
       - postgres
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    env_file:
+      - .env
 
 volumes:
   postgres_data:

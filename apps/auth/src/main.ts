@@ -3,19 +3,21 @@ import { AuthModule } from './auth.module';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { ValidationPipe } from '@nestjs/common';
-import { Transport } from '@nestjs/microservices';
+import { RmqOptions, Transport } from '@nestjs/microservices';
 import cookieParser from 'cookie-parser';
+import { AUTH_QUEUE } from '@app/common/consts';
 
 async function bootstrap() {
   console.log('Starting Auth Service...');
 
   const app = await NestFactory.create(AuthModule);
   const configService = app.get(ConfigService);
-  app.connectMicroservice({
-    transport: Transport.TCP,
+  app.connectMicroservice<RmqOptions>({
+    transport: Transport.RMQ,
     options: {
-      host: '0.0.0.0',
-      port: configService.get('TCP_PORT'),
+      urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
+      queue: AUTH_QUEUE,
+      queueOptions: {},
     },
   });
   app.useGlobalPipes(
