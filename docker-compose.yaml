@@ -12,7 +12,8 @@ services:
     env_file:
       - apps/reservations/.env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   auth:
     build:
@@ -27,7 +28,8 @@ services:
     env_file:
       - apps/auth/.env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   payments:
     build:
@@ -42,7 +44,21 @@ services:
     env_file:
       - apps/payments/.env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+
+  notifications:
+    build:
+      context: .
+      dockerfile: apps/notifications/Dockerfile
+      target: development
+    volumes:
+      - .:/usr/src/app
+    command: yarn start:dev notifications
+    env_file:
+      - apps/notifications/.env
+    depends_on:
+      - rabbitmq
 
   postgres:
     image: postgres:16
@@ -52,6 +68,12 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   pgadmin:
     image: dpage/pgadmin4
     env_file:

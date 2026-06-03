@@ -11,3 +11,10 @@ export const PAYMENTS_MESSAGES = {
   CREATE: 'create-payment',
   CONFIRM: 'confirm-payment',
 };
+
+export const NOTIFICATIONS_SERVICE = 'NOTIFICATIONS_SERVICE';
+export const NOTIFICATIONS_QUEUE = 'notifications_queue';
+
+export const NOTIFICATIONS_MESSAGES = {
+  NOTIFY_EMAIL: 'notify-email',
+};
