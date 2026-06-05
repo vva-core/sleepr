@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsService } from './notifications.service';
+import { PaymentsPublisher } from 'apps/payments/src/payments.publisher';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { NotificationsService } from './notifications.service';
     }),
   ],
   controllers: [NotificationsController],
-  providers: [NotificationsService],
+  providers: [NotificationsService, PaymentsPublisher],
 })
 export class NotificationsModule {}

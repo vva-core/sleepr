@@ -9,6 +9,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ReservationsController } from './reservations.controller';
+import { ReservationsEventsController } from './reservations.events.controller';
 import { ReservationsRepository } from './reservations.repository';
 import { ReservationsService } from './reservations.service';
 
@@ -48,7 +49,7 @@ import { ReservationsService } from './reservations.service';
       },
     ]),
   ],
-  controllers: [ReservationsController],
+  controllers: [ReservationsController, ReservationsEventsController],
   providers: [ReservationsService, ReservationsRepository],
 })
 export class ReservationsModule {}

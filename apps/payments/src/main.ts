@@ -1,23 +1,29 @@
 import { NestFactory } from '@nestjs/core';
-import { PaymentsModule } from './payments.module';
-import { RmqOptions, Transport } from '@nestjs/microservices';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from 'nestjs-pino';
 import { PAYMENTS_QUEUE } from '@app/common/consts';
+import { PaymentsModule } from './payments.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(PaymentsModule);
-  const configService = app.get(ConfigService);
+  const appContext = await NestFactory.createApplicationContext(
+    PaymentsModule,
+    { logger: false },
+  );
+  const configService = appContext.get(ConfigService);
+  const rabbitmqUrl = configService.getOrThrow<string>('RABBITMQ_URL');
+  await appContext.close();
 
-  app.connectMicroservice<RmqOptions>({
-    transport: Transport.RMQ,
-    options: {
-      urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
-      queue: PAYMENTS_QUEUE,
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    PaymentsModule,
+    {
+      transport: Transport.RMQ,
+      options: { urls: [rabbitmqUrl], queue: PAYMENTS_QUEUE },
     },
-  });
+  );
+
   app.useLogger(app.get(Logger));
-  await app.startAllMicroservices();
+  await app.listen();
 }
 
-bootstrap();
+void bootstrap();

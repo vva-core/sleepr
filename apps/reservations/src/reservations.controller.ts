@@ -1,4 +1,8 @@
+import { CurrentUser, PaymentDto, Roles } from '@app/common';
 import { JwtAuthGuard } from '@app/common/auth';
+import { PAYMENTS_MESSAGES, PAYMENTS_SERVICE } from '@app/common/consts';
+import { RoleGuard } from '@app/common/guards';
+import type { User } from '@app/common/prisma/generated/prisma';
 import {
   Body,
   Controller,
@@ -10,14 +14,10 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationsService } from './reservations.service';
-import { CurrentUser, PaymentDto, Roles } from '@app/common';
-import type { User } from '@app/common/prisma/generated/prisma';
-import { ClientProxy } from '@nestjs/microservices';
-import { PAYMENTS_SERVICE, PAYMENTS_MESSAGES } from '@app/common/consts';
-import { RoleGuard } from '@app/common/guards';
 
 @Roles('user')
 @UseGuards(JwtAuthGuard, RoleGuard)

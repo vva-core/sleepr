@@ -1,11 +1,12 @@
+import { DatabaseModule, LoggerModule } from '@app/common';
 import { Module } from '@nestjs/common';
-import { PaymentsController } from './payments.controller';
-import { PaymentsService } from './payments.service';
 import { ConfigModule } from '@nestjs/config';
 import Joi from 'joi';
-import { DatabaseModule, LoggerModule } from '@app/common';
-import { StripeModule } from './stripe/stripe.module';
+import { PaymentsController } from './payments.controller';
 import { PaymentsRepository } from './payments.repository';
+import { PaymentsService } from './payments.service';
+import { StripeModule } from './stripe/stripe.module';
+import { PaymentsPublisher } from './payments.publisher';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { PaymentsRepository } from './payments.repository';
     }),
   ],
   controllers: [PaymentsController],
-  providers: [PaymentsService, PaymentsRepository],
+  providers: [PaymentsService, PaymentsRepository, PaymentsPublisher],
 })
 export class PaymentsModule {}
