@@ -25,8 +25,8 @@ spec:
           env:
             - name: HTTP_PORT
               value: '3001'
-            - name: TCP_PORT
-              value: '3002'
+            - name: AUTH_GRPC_URL
+              value: '0.0.0.0:50051'
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -41,4 +41,4 @@ spec:
               value: '3600s'
           ports:
             - containerPort: 3001
-            - containerPort: 3002
+            - containerPort: 50051

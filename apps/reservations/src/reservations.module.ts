@@ -1,13 +1,13 @@
 import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
+import { PAYMENTS_QUEUE, PAYMENTS_SERVICE } from '@app/common/consts';
 import {
-  AUTH_QUEUE,
-  AUTH_SERVICE,
-  PAYMENTS_QUEUE,
-  PAYMENTS_SERVICE,
-} from '@app/common/consts';
+  AUTH_PACKAGE_NAME,
+  AUTH_SERVICE_NAME,
+} from '@app/common/types/proto/auth';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { join } from 'path';
 import { ReservationsController } from './reservations.controller';
 import { ReservationsEventsController } from './reservations.events.controller';
 import { ReservationsRepository } from './reservations.repository';
@@ -24,14 +24,17 @@ import { ReservationsService } from './reservations.service';
     }),
     ClientsModule.registerAsync([
       {
-        name: AUTH_SERVICE,
+        name: AUTH_SERVICE_NAME,
         useFactory: (configService: ConfigService) => ({
-          transport: Transport.RMQ,
+          transport: Transport.GRPC,
 
           options: {
-            urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
-            queue: AUTH_QUEUE,
-            queueOptions: {},
+            package: AUTH_PACKAGE_NAME,
+            url: configService.getOrThrow<string>('AUTH_GRPC_URL'),
+            protoPath: join(__dirname, '../../../proto/auth.proto'),
+            loader: {
+              includeDirs: [join(__dirname, '../../../proto')],
+            },
           },
         }),
         inject: [ConfigService],

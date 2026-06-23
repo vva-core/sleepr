@@ -6,6 +6,8 @@ services:
       target: development
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/reservations/node_modules
     ports:
       - '3000:3000'
     command: sh -c "npx prisma migrate deploy && yarn start:dev reservations"
@@ -22,6 +24,8 @@ services:
       target: development
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/auth/node_modules
     ports:
       - '3001:3001'
     command: sh -c "npx prisma migrate deploy && yarn start:dev auth"
@@ -38,6 +42,8 @@ services:
       target: development
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/payments/node_modules
     ports:
       - '3002:3002'
     command: sh -c "npx prisma migrate deploy && yarn start:dev payments"
@@ -54,6 +60,8 @@ services:
       target: development
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/notifications/node_modules
     command: yarn start:dev notifications
     env_file:
       - apps/notifications/.env

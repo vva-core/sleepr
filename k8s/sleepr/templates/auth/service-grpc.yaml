@@ -3,13 +3,13 @@ kind: Service
 metadata:
   labels:
     app: auth
-  name: auth-tcp
+  name: auth-grpc
 spec:
   ports:
-    - name: auth-tcp
-      port: 3002
+    - name: auth-grpc
+      port: 50051
       protocol: TCP
-      targetPort: 3002
+      targetPort: 50051
   selector:
     app: auth
   type: ClusterIP

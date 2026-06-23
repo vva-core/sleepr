@@ -18,9 +18,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/auth/test/jest-e2e.json"
+    "test:e2e": "jest --config ./apps/auth/test/jest-e2e.json",
+    "proto:generate": "npx protoc  --plugin=./node_modules/.bin/protoc-gen-ts_proto  --ts_proto_out=./libs/common/src/types/proto  --ts_proto_opt=nestJs=true  --proto_path=./proto  ./proto/auth.proto ./proto/payments.proto ./proto/reservation.proto"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.14.4",
+    "@grpc/proto-loader": "^0.8.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.0.1",
@@ -69,6 +72,7 @@
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
+    "ts-proto": "^2.11.8",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"

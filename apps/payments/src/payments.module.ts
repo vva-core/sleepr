@@ -16,9 +16,9 @@ import { PaymentsPublisher } from './payments.publisher';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        PORT: Joi.number().required(),
         DATABASE_URL: Joi.string().required(),
         STRIPE_SECRET_KEY: Joi.string().required(),
+        RABBITMQ_URL: Joi.string().required(),
       }),
     }),
   ],
