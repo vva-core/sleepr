@@ -43,10 +43,10 @@ All services share one PostgreSQL database via Prisma. Proto definitions live in
 
 ### 3. Self-Improvement Loop
 
-- After ANY correction from the user: update `tasks/lessons.md` with the pattern
+- After ANY correction from the user: record the pattern as a project memory (write a memory file + MEMORY.md pointer)
 - Write rules for yourself that prevent the same mistake
 - Ruthlessly iterate on these lessons until mistake rate drops
-- Review lessons at session start for relevant project
+- Project memory is loaded at session start — apply relevant entries
 
 ### 4. Verification Before Done
 
@@ -71,12 +71,12 @@ All services share one PostgreSQL database via Prisma. Proto definitions live in
 
 ## Task Management
 
-1. **Plan First**: Write plan to `tasks/todo.md` with checkable items
+1. **Plan First**: Write plan to `.docs/todo.md` with checkable items
 2. **Verify Plan**: Check in before starting implementation
 3. **Track Progress**: Mark items complete as you go
 4. **Explain Changes**: High-level summary at each step
-5. **Document Results**: Add review section to `tasks/todo.md`
-6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
+5. **Document Results**: Add review section to `.docs/todo.md`
+6. **Capture Lessons**: Record corrections in project memory (MEMORY.md) after corrections
 
 ## Core Principles
 
