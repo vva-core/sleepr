@@ -22,18 +22,16 @@ for review. Work through the steps in order. Reference detail lives in
 - **needsDatabase** (`yes`/`no`): does it use Postgres via Prisma? Controls
   `DATABASE_URL`, `depends_on: postgres`, and the `prisma migrate deploy` command prefix.
 
-## 2. Pick the HTTP port (auto-detect)
+## 2. Choose the HTTP port (ask the user)
 
-Only for profiles that expose HTTP (`http`, `http+grpc`). Scan
-`docker-compose.yaml` for ports already mapped and choose the next free one above
-the existing service range (services today use 3000–3002).
+Only for profiles that expose HTTP (`http`, `http+grpc`). Skip this step entirely
+for `rmq-consumer` and `grpc-only` — they map no port.
 
-```!
-max=$(grep -oE "'3[0-9]+:" docker-compose.yaml | tr -d "':" | sort -n | tail -1)
-echo $(( ${max:-3002} + 1 ))
-```
-
-Show the chosen port to the user before writing anything.
+Ask the user which host port to map. To offer a sensible default, use `Grep` on
+`docker-compose.yaml` (pattern `'3[0-9]{3}:`) to list the ports already mapped,
+then suggest the next free one above the current range (services today use
+3000–3002, so the suggestion is 3003). Confirm the port with the user before
+writing anything.
 
 ## 3. Generate the Nest app
 

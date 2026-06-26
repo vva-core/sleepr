@@ -35,7 +35,7 @@ the entry is missing.
 ## Substitution checklist (per generated file)
 
 1. Service name in all paths, labels, `app:` selectors, container/image names.
-2. Port (HTTP profiles only) — the auto-detected free port.
+2. Port (HTTP profiles only) — the port the user chose in step 2.
 3. `depends_on` target matches the profile (postgres vs rabbitmq).
 4. gRPC url/env only for `http+grpc` / `grpc-only`.
 5. Run prettier conventions from `.prettierrc` on generated TS/JSON.

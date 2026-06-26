@@ -48,7 +48,7 @@ postgres `depends_on` with the RMQ wiring as needed.
 
 ## Port exposure is transitional
 
-HTTP services still get an auto-detected exposed port for now, but the gateway
-app is slated to become the **sole** entry point. When generating the compose
+HTTP services still get an exposed port (chosen by the user) for now, but the
+gateway app is slated to become the **sole** entry point. When generating the compose
 block for an HTTP service, add a short comment noting the `ports:` mapping is
 temporary until the gateway fronts all traffic.
