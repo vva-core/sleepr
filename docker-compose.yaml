@@ -68,6 +68,22 @@ services:
     depends_on:
       - rabbitmq
 
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/gateway/node_modules
+    ports:
+      # transitional until the gateway fronts all traffic
+      - '3003:3003'
+    command: yarn start:dev gateway
+    env_file:
+      - apps/gateway/.env
+
   postgres:
     image: postgres:16
     env_file:
