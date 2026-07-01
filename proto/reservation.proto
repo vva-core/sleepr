@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package reservations;
+
+enum ReservationStatus {
+  RESERVATION_STATUS_UNSPECIFIED = 0;
+  PENDING = 1;
+  CONFIRMED = 2;
+  CANCELLED = 3;
+  COMPLETED = 4;
+}
+
+message Reservation {
+  string id = 1;
+  string start_date = 2;
+  string end_date = 3;
+  string user_id = 4;
+  string place_id = 5;
+  string created_at = 6;
+  string updated_at = 7;
+  ReservationStatus status = 8;
+}

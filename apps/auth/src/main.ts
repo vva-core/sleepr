@@ -1,23 +1,28 @@
-import { NestFactory } from '@nestjs/core';
-import { AuthModule } from './auth.module';
-import { ConfigService } from '@nestjs/config';
-import { Logger } from 'nestjs-pino';
+import { AUTH_PACKAGE_NAME } from '@app/common/types/proto/auth';
 import { ValidationPipe } from '@nestjs/common';
-import { RmqOptions, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { GrpcOptions, Transport } from '@nestjs/microservices';
 import cookieParser from 'cookie-parser';
-import { AUTH_QUEUE } from '@app/common/consts';
+import { Logger } from 'nestjs-pino';
+import { AuthModule } from './auth.module';
+import { join } from 'path';
 
 async function bootstrap() {
   console.log('Starting Auth Service...');
 
   const app = await NestFactory.create(AuthModule);
   const configService = app.get(ConfigService);
-  app.connectMicroservice<RmqOptions>({
-    transport: Transport.RMQ,
+
+  app.connectMicroservice<GrpcOptions>({
+    transport: Transport.GRPC,
     options: {
-      urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
-      queue: AUTH_QUEUE,
-      queueOptions: {},
+      package: AUTH_PACKAGE_NAME,
+      protoPath: join(__dirname, '../../../proto/auth.proto'),
+      loader: {
+        includeDirs: [join(__dirname, '../../../proto')],
+      },
+      url: configService.getOrThrow<string>('AUTH_GRPC_URL'),
     },
   });
   app.useGlobalPipes(

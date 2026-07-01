@@ -1,0 +1,23 @@
+syntax = "proto3";
+package auth;
+
+import "reservation.proto";
+import "payments.proto";
+
+service AuthService {
+  rpc authenticate (Authentication) returns (User);
+}
+
+message Authentication {
+  string token = 1;
+}
+
+message User {
+    string id = 1;
+    string email = 2;
+    string created_at = 3;
+    string updated_at = 4;
+    repeated string roles = 5;
+    repeated reservations.Reservation reservations = 6;
+    repeated payments.Payment payments = 7;
+}

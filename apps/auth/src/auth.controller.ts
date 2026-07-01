@@ -1,15 +1,18 @@
 import { CurrentUser } from '@app/common';
+import {
+  AuthServiceControllerMethods,
+  type AuthServiceController,
+} from '@app/common/types/proto/auth';
 import { Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { type Response } from 'express';
+import { JwtGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
-import { type Response } from 'express';
-import { MessagePattern } from '@nestjs/microservices';
-import { JwtGuard } from './guards/jwt-auth.guard';
 import type { User } from '@app/common/prisma/generated/prisma';
-import { AUTH_MESSAGES } from '@app/common/consts';
 
 @Controller('auth')
-export class AuthController {
+@AuthServiceControllerMethods()
+export class AuthController implements AuthServiceController {
   constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
@@ -22,7 +25,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtGuard)
-  @MessagePattern(AUTH_MESSAGES.AUTHENTICATE)
+  //@ts-expect-error: The @CurrentUser decorator is not expected in authenticate proto method.
   authenticate(@CurrentUser() user: User) {
     return user;
   }

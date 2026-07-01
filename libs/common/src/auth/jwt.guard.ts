@@ -3,19 +3,30 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
+  OnModuleInit,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import type { ClientGrpc } from '@nestjs/microservices';
 import { catchError, map, Observable, of } from 'rxjs';
-import { AUTH_MESSAGES, AUTH_SERVICE } from '../consts';
+
 import { LoggerService } from '../logger/logger.service';
-import { User } from '../prisma/generated/prisma';
+import {
+  AUTH_SERVICE_NAME,
+  AuthServiceClient,
+  User,
+} from '../types/proto/auth';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class JwtAuthGuard implements CanActivate, OnModuleInit {
+  private authClient: AuthServiceClient;
+
   constructor(
-    @Inject(AUTH_SERVICE) private readonly authClient: ClientProxy,
+    @Inject(AUTH_SERVICE_NAME) private readonly client: ClientGrpc,
     private readonly logger: LoggerService,
   ) {}
+
+  onModuleInit() {
+    this.authClient = this.client.getService(AUTH_SERVICE_NAME);
+  }
 
   canActivate(
     context: ExecutionContext,
@@ -30,8 +41,8 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     return this.authClient
-      .send(AUTH_MESSAGES.AUTHENTICATE, {
-        Authentication: jwt,
+      .authenticate({
+        token: jwt,
       })
       .pipe(
         map((user: User) => {

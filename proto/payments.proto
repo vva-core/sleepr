@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package payments;
+
+service PaymentsService {
+  rpc CreatePayment (CreatePaymentRequest) returns (CreatePaymentResponse);
+  rpc ConfirmPayment (ConfirmPaymentRequest) returns (Payment);
+  rpc GetPayment (GetPaymentRequest) returns (Payment);
+}
+
+enum PaymentStatus {
+  PAYMENT_STATUS_UNSPECIFIED = 0;
+  PENDING = 1;
+  SUCCEEDED = 2;
+  FAILED = 3;
+  CANCELLED = 4;
+}
+
+message Payment {
+  string id = 1;
+  string reservation_id = 2;
+  double amount = 3;
+  PaymentStatus status = 4;
+  string created_at = 5;
+  string stripe_payment_intent_id = 6;
+}
+
+message CreatePaymentRequest {
+  string reservation_id = 1;
+  double amount = 2;
+  string email = 3;
+}
+
+message CreatePaymentResponse {
+  string client_secret = 1;
+  Payment payment = 2;
+}
+
+message ConfirmPaymentRequest {
+  string payment_intent_id = 1;
+  string payment_method_id = 2;
+}
+
+message GetPaymentRequest {
+  string id = 1;
+}

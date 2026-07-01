@@ -32,4 +32,6 @@ COPY --from=development /usr/src/app/apps/auth/node_modules ./apps/auth/node_mod
 COPY --from=development /usr/src/app/prisma ./prisma
 COPY --from=development /usr/src/app/prisma.config.ts ./prisma.config.ts
 
+COPY proto proto
+
 CMD ["node", "dist/apps/auth/main.js"]
