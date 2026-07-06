@@ -1,4 +1,4 @@
-const AUTH_URL = 'http://auth:3001';
+const AUTH_URL = 'http://gateway:3003';
 
 export async function createUser(
   email: string,

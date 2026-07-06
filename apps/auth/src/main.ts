@@ -3,7 +3,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { GrpcOptions, Transport } from '@nestjs/microservices';
-import cookieParser from 'cookie-parser';
 import { Logger } from 'nestjs-pino';
 import { AuthModule } from './auth.module';
 import { join } from 'path';
@@ -33,7 +32,6 @@ async function bootstrap() {
     }),
   );
   app.useLogger(app.get(Logger));
-  app.use(cookieParser());
   await app.startAllMicroservices();
   await app.listen(configService.getOrThrow('HTTP_PORT'));
 }

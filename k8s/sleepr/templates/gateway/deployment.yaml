@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: gateway
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      containers:
+        - image: 805102730154.dkr.ecr.eu-north-1.amazonaws.com/sleepr/gateway:latest
+          name: gateway
+          env:
+            - name: PORT
+              value: '3003'
+          ports:
+            - containerPort: 3003

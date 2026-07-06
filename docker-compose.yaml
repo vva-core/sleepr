@@ -26,8 +26,6 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
       - /usr/src/app/apps/auth/node_modules
-    ports:
-      - '3001:3001'
     command: sh -c "npx prisma migrate deploy && yarn start:dev auth"
     env_file:
       - apps/auth/.env
@@ -67,6 +65,22 @@ services:
       - apps/notifications/.env
     depends_on:
       - rabbitmq
+
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/apps/gateway/node_modules
+    ports:
+      # transitional until the gateway fronts all traffic
+      - '3003:3003'
+    command: yarn start:dev gateway
+    env_file:
+      - apps/gateway/.env
 
   postgres:
     image: postgres:16
