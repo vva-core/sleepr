@@ -2,14 +2,34 @@ syntax = "proto3";
 package auth;
 
 import "reservation.proto";
-import "payments.proto";
 
 service AuthService {
   rpc authenticate (Authentication) returns (User);
+  rpc login (LoginRequest) returns (LoginResponse);
+  rpc createUser (CreateUserRequest) returns (User);
+  rpc deleteUser (DeleteUserRequest) returns (User);
 }
 
 message Authentication {
   string token = 1;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+}
+
+message CreateUserRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message DeleteUserRequest {
+  string user_id = 1;
 }
 
 message User {
@@ -19,5 +39,4 @@ message User {
     string updated_at = 4;
     repeated string roles = 5;
     repeated reservations.Reservation reservations = 6;
-    repeated payments.Payment payments = 7;
 }

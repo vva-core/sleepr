@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { TokenPayload } from '../user/interfaces/token-payload.interface';
+import { PublicUser } from '../user/interfaces/user.interface';
 import { UserService } from '../user/user.service';
-import { User } from '@app/common/prisma/generated/prisma';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: TokenPayload): Promise<User> {
+  async validate(payload: TokenPayload): Promise<PublicUser> {
     return await this.userService.getUser(payload.sub);
   }
 }

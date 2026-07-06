@@ -26,8 +26,6 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
       - /usr/src/app/apps/auth/node_modules
-    ports:
-      - '3001:3001'
     command: sh -c "npx prisma migrate deploy && yarn start:dev auth"
     env_file:
       - apps/auth/.env

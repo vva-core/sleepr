@@ -2,31 +2,43 @@ import { CurrentUser } from '@app/common';
 import {
   AuthServiceControllerMethods,
   type AuthServiceController,
+  type CreateUserRequest,
+  type DeleteUserRequest,
 } from '@app/common/types/proto/auth';
-import { Controller, Post, Res, UseGuards } from '@nestjs/common';
-import { type Response } from 'express';
+import { Controller, UseGuards } from '@nestjs/common';
 import { JwtGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
+import { UserService } from './user/user.service';
+import { toProtoUser } from './user/user.mapper';
 import type { User } from '@app/common/prisma/generated/prisma';
 
-@Controller('auth')
+@Controller()
 @AuthServiceControllerMethods()
 export class AuthController implements AuthServiceController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   @UseGuards(LocalAuthGuard)
-  @Post('login')
-  login(
-    @CurrentUser() user: User,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    return this.authService.login(user, response);
+  login(@CurrentUser() user: User) {
+    return this.authService.login(user);
   }
 
   @UseGuards(JwtGuard)
   //@ts-expect-error: The @CurrentUser decorator is not expected in authenticate proto method.
   authenticate(@CurrentUser() user: User) {
-    return user;
+    return toProtoUser(user);
+  }
+
+  async createUser(request: CreateUserRequest) {
+    const user = await this.userService.create(request);
+    return toProtoUser(user);
+  }
+
+  async deleteUser(request: DeleteUserRequest) {
+    const user = await this.userService.deleteUser(request.userId);
+    return toProtoUser(user);
   }
 }
