@@ -58,15 +58,16 @@ Focus on architecture-level concerns, not formatting or naming nits:
 
 - Module boundaries, coupling, and cohesion
 - Separation of concerns and layering; misplaced responsibilities
-- Consistency with this monorepo's established patterns (services under `apps/`,
-  shared building blocks in `libs/common`, Prisma as the shared data layer)
+- Consistency with this monorepo's established architecture, codified as `ARCH-*` in
+  `.claude/rules/architecture.md` — cite the rule id for any structural finding
 - Contract/data design (proto definitions, event payloads, DTOs, DB schema)
 - Failure modes, scalability, and operational concerns
 - Leaky or premature abstractions and hidden coupling
 
 ## 3. Rules to apply
 
-- .claude/rules/service-communication.md
+- .claude/rules/architecture.md — structural conventions (`ARCH-*`)
+- .claude/rules/service-communication.md — runtime transport (`COMM-*`)
 
 ## Hard constraints (non-negotiable)
 
