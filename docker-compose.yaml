@@ -43,7 +43,7 @@ services:
       - /usr/src/app/node_modules
       - /usr/src/app/apps/payments/node_modules
     ports:
-      - '3002:3002'
+      - '50053:50053'
     command: sh -c "npx prisma migrate deploy && yarn start:dev payments"
     env_file:
       - apps/payments/.env

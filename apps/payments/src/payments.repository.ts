@@ -44,6 +44,20 @@ export class PaymentsRepository implements IBaseRepository<
     return payment;
   }
 
+  async findByStripeIntentId(stripePaymentIntentId: string): Promise<Payments> {
+    const payment = await this.prisma.payments.findFirst({
+      where: { stripePaymentIntentId },
+    });
+
+    if (!payment) {
+      throw new NotFoundException(
+        `Payment for intent ${stripePaymentIntentId} not found`,
+      );
+    }
+
+    return payment;
+  }
+
   async update(id: string, data: UpdatePaymentDto): Promise<Payments> {
     return await this.prisma.payments.update({ where: { id }, data });
   }

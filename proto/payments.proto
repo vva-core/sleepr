@@ -5,7 +5,6 @@ package payments;
 service PaymentsService {
   rpc CreatePayment (CreatePaymentRequest) returns (CreatePaymentResponse);
   rpc ConfirmPayment (ConfirmPaymentRequest) returns (Payment);
-  rpc GetPayment (GetPaymentRequest) returns (Payment);
 }
 
 enum PaymentStatus {
@@ -39,8 +38,4 @@ message CreatePaymentResponse {
 message ConfirmPaymentRequest {
   string payment_intent_id = 1;
   string payment_method_id = 2;
-}
-
-message GetPaymentRequest {
-  string id = 1;
 }

@@ -38,3 +38,5 @@ spec:
                 secretKeyRef:
                   name: rabbitmq-url
                   key: rabbitmqUrl
+            - name: PAYMENTS_GRPC_URL
+              value: '0.0.0.0:50053'

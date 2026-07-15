@@ -1,9 +1,12 @@
 import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
-import { PAYMENTS_QUEUE, PAYMENTS_SERVICE } from '@app/common/consts';
 import {
   AUTH_PACKAGE_NAME,
   AUTH_SERVICE_NAME,
 } from '@app/common/types/proto/auth';
+import {
+  PAYMENTS_PACKAGE_NAME,
+  PAYMENTS_SERVICE_NAME,
+} from '@app/common/types/proto/payments';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
@@ -40,12 +43,16 @@ import { ReservationsService } from './reservations.service';
         inject: [ConfigService],
       },
       {
-        name: PAYMENTS_SERVICE,
+        name: PAYMENTS_SERVICE_NAME,
         useFactory: (configService: ConfigService) => ({
-          transport: Transport.RMQ,
+          transport: Transport.GRPC,
           options: {
-            urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
-            queue: PAYMENTS_QUEUE,
+            package: PAYMENTS_PACKAGE_NAME,
+            url: configService.getOrThrow<string>('PAYMENTS_GRPC_URL'),
+            protoPath: join(__dirname, '../../../proto/payments.proto'),
+            loader: {
+              includeDirs: [join(__dirname, '../../../proto')],
+            },
           },
         }),
         inject: [ConfigService],

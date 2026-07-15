@@ -19,6 +19,7 @@ import { PaymentsPublisher } from './payments.publisher';
         DATABASE_URL: Joi.string().required(),
         STRIPE_SECRET_KEY: Joi.string().required(),
         RABBITMQ_URL: Joi.string().required(),
+        PAYMENTS_GRPC_URL: Joi.string().required(),
       }),
     }),
   ],

@@ -11,11 +11,6 @@ export const AUTH_MESSAGES = {
   AUTHENTICATE: 'authenticate',
 } as const;
 
-export const PAYMENTS_MESSAGES = {
-  CREATE: 'create-payment',
-  CONFIRM: 'confirm-payment',
-} as const;
-
 export const PAYMENTS_EVENTS = {
   PAYMENT_CREATED: 'payment.created',
 } as const;

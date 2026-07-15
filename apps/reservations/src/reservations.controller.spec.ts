@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReservationsController } from './reservations.controller';
 import { ReservationsService } from './reservations.service';
-import { PAYMENTS_SERVICE } from '@app/common/consts';
+import { PAYMENTS_SERVICE_NAME } from '@app/common/types/proto/payments';
 import { JwtAuthGuard } from '@app/common/auth';
 import { RoleGuard } from '@app/common/guards';
 
@@ -22,7 +22,7 @@ describe('ReservationsController', () => {
             remove: jest.fn(),
           },
         },
-        { provide: PAYMENTS_SERVICE, useValue: { send: jest.fn() } },
+        { provide: PAYMENTS_SERVICE_NAME, useValue: { getService: jest.fn() } },
       ],
     })
       .overrideGuard(JwtAuthGuard)

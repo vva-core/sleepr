@@ -1,20 +1,24 @@
 import { CurrentUser, PaymentDto, Roles } from '@app/common';
 import { JwtAuthGuard } from '@app/common/auth';
-import { PAYMENTS_MESSAGES, PAYMENTS_SERVICE } from '@app/common/consts';
 import { RoleGuard } from '@app/common/guards';
 import type { User } from '@app/common/prisma/generated/prisma';
+import {
+  PAYMENTS_SERVICE_NAME,
+  PaymentsServiceClient,
+} from '@app/common/types/proto/payments';
 import {
   Body,
   Controller,
   Delete,
   Get,
   Inject,
+  OnModuleInit,
   Param,
   Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import type { ClientGrpc } from '@nestjs/microservices';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationsService } from './reservations.service';
@@ -22,11 +26,20 @@ import { ReservationsService } from './reservations.service';
 @Roles('user')
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('reservations')
-export class ReservationsController {
+export class ReservationsController implements OnModuleInit {
+  private paymentsService: PaymentsServiceClient;
+
   constructor(
     private readonly reservationsService: ReservationsService,
-    @Inject(PAYMENTS_SERVICE) private readonly paymentsService: ClientProxy,
+    @Inject(PAYMENTS_SERVICE_NAME) private readonly paymentsClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.paymentsService =
+      this.paymentsClient.getService<PaymentsServiceClient>(
+        PAYMENTS_SERVICE_NAME,
+      );
+  }
 
   @Post()
   create(
@@ -40,10 +53,12 @@ export class ReservationsController {
   createReservationPayment(
     @Body() paymentDto: PaymentDto,
     @Param('id') reservationId: string,
+    @CurrentUser() user: User,
   ) {
-    return this.paymentsService.send(PAYMENTS_MESSAGES.CREATE, {
-      ...paymentDto,
+    return this.paymentsService.createPayment({
+      amount: paymentDto.amount,
       reservationId,
+      email: user.email,
     });
   }
 
@@ -51,7 +66,7 @@ export class ReservationsController {
   confirmReservationPayment(
     @Body() data: { paymentIntentId: string; paymentMethodId: string },
   ) {
-    return this.paymentsService.send(PAYMENTS_MESSAGES.CONFIRM, data);
+    return this.paymentsService.confirmPayment(data);
   }
 
   @Get()

@@ -26,6 +26,8 @@ spec:
               value: '3000'
             - name: AUTH_GRPC_URL
               value: 'auth-grpc:50051'
+            - name: PAYMENTS_GRPC_URL
+              value: 'payments-grpc:50053'
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:

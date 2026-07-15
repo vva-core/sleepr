@@ -1,29 +1,38 @@
+import { PAYMENTS_EVENTS } from '@app/common/consts';
+import {
+  ConfirmPaymentRequest,
+  CreatePaymentRequest,
+  CreatePaymentResponse,
+  Payment,
+  PaymentsServiceController,
+  PaymentsServiceControllerMethods,
+} from '@app/common/types/proto/payments';
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
-import { PaymentsService } from './payments.service';
-import { PaymentDto } from '@app/common';
-import { PAYMENTS_EVENTS, PAYMENTS_MESSAGES } from '@app/common/consts';
 import { PaymentsPublisher } from './payments.publisher';
+import { PaymentsService } from './payments.service';
 
 @Controller()
-export class PaymentsController {
+@PaymentsServiceControllerMethods()
+export class PaymentsController implements PaymentsServiceController {
   constructor(
     private readonly paymentsService: PaymentsService,
     private readonly paymentsPublisher: PaymentsPublisher,
   ) {}
 
-  @MessagePattern(PAYMENTS_MESSAGES.CREATE)
-  async createPayment(data: PaymentDto & { reservationId: string }) {
-    const payment = await this.paymentsService.createPayment(data);
-    this.paymentsPublisher.publish(PAYMENTS_EVENTS.PAYMENT_CREATED, payment);
-    return payment;
+  async createPayment(
+    request: CreatePaymentRequest,
+  ): Promise<CreatePaymentResponse> {
+    const response = await this.paymentsService.createPayment(request);
+
+    this.paymentsPublisher.publish(
+      PAYMENTS_EVENTS.PAYMENT_CREATED,
+      response.payment,
+    );
+
+    return response;
   }
 
-  @MessagePattern(PAYMENTS_MESSAGES.CONFIRM)
-  async confirmPayment(data: {
-    paymentIntentId: string;
-    paymentMethodId: string;
-  }) {
-    return this.paymentsService.confirmPayment(data);
+  async confirmPayment(request: ConfirmPaymentRequest): Promise<Payment> {
+    return this.paymentsService.confirmPayment(request);
   }
 }

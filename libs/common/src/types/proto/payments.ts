@@ -44,18 +44,12 @@ export interface ConfirmPaymentRequest {
   paymentMethodId: string;
 }
 
-export interface GetPaymentRequest {
-  id: string;
-}
-
 export const PAYMENTS_PACKAGE_NAME = "payments";
 
 export interface PaymentsServiceClient {
   createPayment(request: CreatePaymentRequest): Observable<CreatePaymentResponse>;
 
   confirmPayment(request: ConfirmPaymentRequest): Observable<Payment>;
-
-  getPayment(request: GetPaymentRequest): Observable<Payment>;
 }
 
 export interface PaymentsServiceController {
@@ -64,13 +58,11 @@ export interface PaymentsServiceController {
   ): Promise<CreatePaymentResponse> | Observable<CreatePaymentResponse> | CreatePaymentResponse;
 
   confirmPayment(request: ConfirmPaymentRequest): Promise<Payment> | Observable<Payment> | Payment;
-
-  getPayment(request: GetPaymentRequest): Promise<Payment> | Observable<Payment> | Payment;
 }
 
 export function PaymentsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["createPayment", "confirmPayment", "getPayment"];
+    const grpcMethods: string[] = ["createPayment", "confirmPayment"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("PaymentsService", method)(constructor.prototype[method], method, descriptor);

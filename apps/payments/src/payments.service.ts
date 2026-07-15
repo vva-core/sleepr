@@ -1,37 +1,68 @@
-import { Injectable } from '@nestjs/common';
-import { StripeService } from './stripe/stripe.service';
-import { PaymentDto } from '@app/common';
+import {
+  ConfirmPaymentRequest,
+  CreatePaymentRequest,
+  CreatePaymentResponse,
+  Payment,
+} from '@app/common/types/proto/payments';
+import { Injectable, Logger } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
+import {
+  fromStripeStatus,
+  toCreatePaymentResponse,
+  toProtoPayment,
+} from './payments.mapper';
 import { PaymentsRepository } from './payments.repository';
+import { StripeService } from './stripe/stripe.service';
 
 @Injectable()
 export class PaymentsService {
+  private readonly logger = new Logger(PaymentsService.name);
+
   constructor(
     private readonly stripeService: StripeService,
     private readonly paymentsRepository: PaymentsRepository,
   ) {}
 
-  async createPayment(data: PaymentDto & { reservationId: string }) {
-    const paymentIntent = await this.stripeService.createPayment(data);
-
-    await this.paymentsRepository.create({
-      amount: data.amount,
-      reservationId: data.reservationId,
-      stripePaymentIntentId: paymentIntent.id,
+  private async createPaymentIntent(data: CreatePaymentRequest) {
+    return this.stripeService.createPaymentIntent({
+      ...data,
+      currency: 'usd',
     });
-
-    return {
-      client_secret: paymentIntent.client_secret,
-    };
   }
 
-  async confirmPayment(data: {
-    paymentIntentId: string;
-    paymentMethodId: string;
-  }) {
+  async createPayment(
+    data: CreatePaymentRequest,
+  ): Promise<CreatePaymentResponse> {
+    try {
+      const paymentIntent = await this.createPaymentIntent(data);
+      const row = await this.paymentsRepository.create({
+        amount: data.amount,
+        reservationId: data.reservationId,
+        stripePaymentIntentId: paymentIntent.id,
+      });
+
+      return toCreatePaymentResponse(row, paymentIntent.client_secret);
+    } catch (error) {
+      this.logger.error('Failed to create payment', error as Error);
+      throw new RpcException('Failed to create payment');
+    }
+  }
+
+  async confirmPayment(data: ConfirmPaymentRequest): Promise<Payment> {
     const { paymentIntentId, paymentMethodId } = data;
-    return await this.stripeService.confirmPayment(
+    const intent = await this.stripeService.confirmPayment(
       paymentIntentId,
       paymentMethodId,
     );
+
+    const existing = await this.paymentsRepository.findByStripeIntentId(
+      intent.id,
+    );
+    const updated = await this.paymentsRepository.update(existing.id, {
+      amount: existing.amount,
+      status: fromStripeStatus(intent.status),
+    });
+
+    return toProtoPayment(updated);
   }
 }

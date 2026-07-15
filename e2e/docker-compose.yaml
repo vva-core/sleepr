@@ -44,7 +44,7 @@ services:
   payments:
     image: 805102730154.dkr.ecr.eu-north-1.amazonaws.com/sleepr/payments
     ports:
-      - '3002:3002'
+      - '50053:50053'
     command: sh -c "npx prisma migrate deploy && node dist/apps/payments/main"
     env_file:
       - ../apps/payments/.env
