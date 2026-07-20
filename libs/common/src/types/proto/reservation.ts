@@ -5,6 +5,9 @@
 // source: reservation.proto
 
 /* eslint-disable */
+import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
+import { Empty } from "./google/protobuf/empty";
 
 export const protobufPackage = "reservations";
 
@@ -28,4 +31,44 @@ export interface Reservation {
   status: ReservationStatus;
 }
 
+export interface CreateReservationRequest {
+  startDate: string;
+  endDate: string;
+  placeId: string;
+  userId: string;
+}
+
+export interface ReservationsList {
+  reservations: Reservation[];
+}
+
 export const RESERVATIONS_PACKAGE_NAME = "reservations";
+
+export interface ReservationServiceClient {
+  create(request: CreateReservationRequest): Observable<Reservation>;
+
+  findAll(request: Empty): Observable<ReservationsList>;
+}
+
+export interface ReservationServiceController {
+  create(request: CreateReservationRequest): Promise<Reservation> | Observable<Reservation> | Reservation;
+
+  findAll(request: Empty): Promise<ReservationsList> | Observable<ReservationsList> | ReservationsList;
+}
+
+export function ReservationServiceControllerMethods() {
+  return function (constructor: Function) {
+    const grpcMethods: string[] = ["create", "findAll"];
+    for (const method of grpcMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("ReservationService", method)(constructor.prototype[method], method, descriptor);
+    }
+    const grpcStreamMethods: string[] = [];
+    for (const method of grpcStreamMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("ReservationService", method)(constructor.prototype[method], method, descriptor);
+    }
+  };
+}
+
+export const RESERVATION_SERVICE_NAME = "ReservationService";

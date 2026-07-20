@@ -1,19 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
 import { IBaseRepository, PrismaService } from '@app/common';
-import { CreateReservationDto } from './dto/create-reservation.dto';
+import { Prisma, Reservation } from '@app/common/prisma/generated/prisma';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
-import { Reservation } from '@app/common/prisma/generated/prisma';
 
 @Injectable()
 export class ReservationsRepository implements IBaseRepository<
   Reservation,
-  CreateReservationDto,
+  Prisma.ReservationUncheckedCreateInput,
   UpdateReservationDto
 > {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(
-    data: CreateReservationDto & { userId: string },
+    data: Prisma.ReservationUncheckedCreateInput,
   ): Promise<Reservation> {
     return this.prisma.reservation.create({
       data,

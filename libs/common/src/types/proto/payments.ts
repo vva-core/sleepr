@@ -32,6 +32,7 @@ export interface CreatePaymentRequest {
   reservationId: string;
   amount: number;
   email: string;
+  currency: string;
 }
 
 export interface CreatePaymentResponse {

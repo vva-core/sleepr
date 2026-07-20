@@ -28,6 +28,7 @@ message CreatePaymentRequest {
   string reservation_id = 1;
   double amount = 2;
   string email = 3;
+  string currency = 4;
 }
 
 message CreatePaymentResponse {
