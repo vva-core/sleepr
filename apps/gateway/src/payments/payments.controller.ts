@@ -12,11 +12,14 @@ import {
   OnModuleInit,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { type ClientGrpc } from '@nestjs/microservices';
 import { ConfirmPaymentDto } from './dto/payments.dto';
 import { firstValueFrom } from 'rxjs';
+import { JwtAuthGuard } from '@app/common';
 
+@UseGuards(JwtAuthGuard)
 @Controller('payments')
 export class PaymentsController implements OnModuleInit {
   private paymentsServiceClient: PaymentsServiceClient;

@@ -6,7 +6,9 @@ import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import { PAYMENTS_EXCHANGE, RESERVATIONS_QUEUE } from '@app/common/consts';
 import { setupRmqTopology } from '@app/common/rmq';
-import { RmqOptions, Transport } from '@nestjs/microservices';
+import { GrpcOptions, RmqOptions, Transport } from '@nestjs/microservices';
+import { RESERVATIONS_PACKAGE_NAME } from '@app/common';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(ReservationsModule, {
@@ -36,6 +38,18 @@ async function bootstrap() {
       queue: RESERVATIONS_QUEUE,
       queueOptions: { durable: true },
       noAck: false,
+    },
+  });
+
+  app.connectMicroservice<GrpcOptions>({
+    transport: Transport.GRPC,
+    options: {
+      url: configService.getOrThrow<string>('RESERVATIONS_GRPC_URL'),
+      package: RESERVATIONS_PACKAGE_NAME,
+      protoPath: join(__dirname, '../../../proto/reservation.proto'),
+      loader: {
+        includeDirs: [join(__dirname, '../../../proto')],
+      },
     },
   });
 

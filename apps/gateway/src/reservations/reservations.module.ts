@@ -4,12 +4,14 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
   RESERVATION_SERVICE_NAME,
   RESERVATIONS_PACKAGE_NAME,
+  JwtAuthModule,
 } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 
 @Module({
   imports: [
+    JwtAuthModule,
     ClientsModule.registerAsync([
       {
         name: RESERVATION_SERVICE_NAME,

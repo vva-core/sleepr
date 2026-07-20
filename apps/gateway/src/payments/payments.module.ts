@@ -1,12 +1,17 @@
 import { Module } from '@nestjs/common';
 import { PaymentsController } from './payments.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { PAYMENTS_PACKAGE_NAME, PAYMENTS_SERVICE_NAME } from '@app/common';
+import {
+  JwtAuthModule,
+  PAYMENTS_PACKAGE_NAME,
+  PAYMENTS_SERVICE_NAME,
+} from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 
 @Module({
   imports: [
+    JwtAuthModule,
     ClientsModule.registerAsync([
       {
         name: PAYMENTS_SERVICE_NAME,

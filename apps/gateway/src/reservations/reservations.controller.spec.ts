@@ -1,6 +1,7 @@
-import { RESERVATION_SERVICE_NAME, User } from '@app/common';
+import { JwtAuthGuard, RESERVATION_SERVICE_NAME, User } from '@app/common';
 import { Test } from '@nestjs/testing';
 import { ReservationsController } from './reservations.controller';
+import { of } from 'rxjs';
 
 const payment = {
   clientSecret: '123',
@@ -40,7 +41,10 @@ describe('Gateway Reservation Controller', () => {
     const app = await Test.createTestingModule({
       controllers: [ReservationsController],
       providers: [{ provide: RESERVATION_SERVICE_NAME, useValue: clientGrpc }],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = app.get<ReservationsController>(ReservationsController);
     controller.onModuleInit();
@@ -54,11 +58,11 @@ describe('Gateway Reservation Controller', () => {
     expect(controller).toBeTruthy();
   });
 
-  it('should create user through reservation client', () => {
-    reservationClient.create.mockReturnValueOnce(reservation);
+  it('should create reservation through reservation client', async () => {
+    reservationClient.create.mockReturnValueOnce(of(reservation));
 
     expect(
-      controller.create(
+      await controller.create(
         {
           endDate: reservation.endDate,
           placeId: reservation.placeId,
@@ -70,6 +74,6 @@ describe('Gateway Reservation Controller', () => {
   });
 
   it('should create reservation payment', () => {
-    reservationClient.createReservationPayment.mockReturnValueOnce(payment);
+    reservationClient.createReservationPayment.mockReturnValueOnce(of(payment));
   });
 });

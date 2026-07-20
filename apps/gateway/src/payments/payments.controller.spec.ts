@@ -1,6 +1,12 @@
-import { Payment, PAYMENTS_SERVICE_NAME, User } from '@app/common';
+import {
+  JwtAuthGuard,
+  Payment,
+  PAYMENTS_SERVICE_NAME,
+  User,
+} from '@app/common';
 import { Test } from '@nestjs/testing';
 import { PaymentsController } from './payments.controller';
+import { of } from 'rxjs';
 
 const user: User = {
   createdAt: '',
@@ -24,7 +30,10 @@ describe('Gateway Reservation Controller', () => {
     const app = await Test.createTestingModule({
       controllers: [PaymentsController],
       providers: [{ provide: PAYMENTS_SERVICE_NAME, useValue: clientGrpc }],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = app.get<PaymentsController>(PaymentsController);
     controller.onModuleInit();
@@ -38,7 +47,7 @@ describe('Gateway Reservation Controller', () => {
     expect(controller).toBeTruthy();
   });
 
-  it('should create payment through reservation client', () => {
+  it('should create payment through reservation client', async () => {
     const newPayment: Payment = {
       amount: 100,
       createdAt: '',
@@ -47,10 +56,10 @@ describe('Gateway Reservation Controller', () => {
       status: 1,
       stripePaymentIntentId: '1',
     };
-    paymentsClient.createPayment.mockReturnValueOnce(newPayment);
+    paymentsClient.createPayment.mockReturnValueOnce(of(newPayment));
 
     expect(
-      controller.createReservationPayment(
+      await controller.createReservationPayment(
         { amount: newPayment.amount, currency: 'usd' },
         '1',
         user,

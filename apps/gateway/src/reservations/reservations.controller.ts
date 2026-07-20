@@ -1,5 +1,6 @@
 import {
   CurrentUser,
+  JwtAuthGuard,
   RESERVATION_SERVICE_NAME,
   ReservationServiceClient,
   type User,
@@ -11,11 +12,12 @@ import {
   Inject,
   OnModuleInit,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { CreateReservationDto } from './dto/reservation.dto';
 import { firstValueFrom } from 'rxjs';
-
+@UseGuards(JwtAuthGuard)
 @Controller('reservations')
 export class ReservationsController implements OnModuleInit {
   private reservationsClient: ReservationServiceClient;

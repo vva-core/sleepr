@@ -1,9 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtAuthGuard } from '@app/common/auth';
-import {
-  AUTH_SERVICE_NAME,
-  type User,
-} from '@app/common/types/proto/auth';
+import { AUTH_SERVICE_NAME, type User } from '@app/common/types/proto/auth';
 import { firstValueFrom, of } from 'rxjs';
 import { UserController } from './user.controller';
 
@@ -55,9 +52,9 @@ describe('Gateway UserController', () => {
   it('deletes the current user by id', async () => {
     authClient.deleteUser.mockReturnValue(of(user));
 
-    await expect(
-      firstValueFrom(controller.deleteUser(user)),
-    ).resolves.toEqual(user);
+    await expect(firstValueFrom(controller.deleteUser(user))).resolves.toEqual(
+      user,
+    );
     expect(authClient.deleteUser).toHaveBeenCalledWith({ userId: 'user-1' });
   });
 });
