@@ -6,6 +6,8 @@ import "reservation.proto";
 service AuthService {
   rpc authenticate (Authentication) returns (User);
   rpc login (LoginRequest) returns (LoginResponse);
+  rpc refresh (RefreshRequest) returns (LoginResponse);
+  rpc logout (RefreshRequest) returns (LogoutResponse);
   rpc createUser (CreateUserRequest) returns (User);
   rpc deleteUser (DeleteUserRequest) returns (User);
 }
@@ -21,6 +23,15 @@ message LoginRequest {
 
 message LoginResponse {
   string token = 1;
+  string refresh_token = 2;
+}
+
+message RefreshRequest {
+  string refresh_token = 1;
+}
+
+message LogoutResponse {
+  bool success = 1;
 }
 
 message CreateUserRequest {

@@ -9,6 +9,8 @@ import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { Empty } from './google/protobuf/empty';
 
+export const protobufPackage = 'reservations';
+
 export enum ReservationStatus {
   RESERVATION_STATUS_UNSPECIFIED = 0,
   PENDING = 1,

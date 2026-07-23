@@ -5,11 +5,11 @@
 // source: auth.proto
 
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
-import { Reservation } from "./reservation";
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
+import { Reservation } from './reservation';
 
-export const protobufPackage = "auth";
+export const protobufPackage = 'auth';
 
 export interface Authentication {
   token: string;
@@ -22,6 +22,15 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
+  refreshToken: string;
+}
+
+export interface RefreshRequest {
+  refreshToken: string;
+}
+
+export interface LogoutResponse {
+  success: boolean;
 }
 
 export interface CreateUserRequest {
@@ -42,12 +51,16 @@ export interface User {
   reservations: Reservation[];
 }
 
-export const AUTH_PACKAGE_NAME = "auth";
+export const AUTH_PACKAGE_NAME = 'auth';
 
 export interface AuthServiceClient {
   authenticate(request: Authentication): Observable<User>;
 
   login(request: LoginRequest): Observable<LoginResponse>;
+
+  refresh(request: RefreshRequest): Observable<LoginResponse>;
+
+  logout(request: RefreshRequest): Observable<LogoutResponse>;
 
   createUser(request: CreateUserRequest): Observable<User>;
 
@@ -55,28 +68,65 @@ export interface AuthServiceClient {
 }
 
 export interface AuthServiceController {
-  authenticate(request: Authentication): Promise<User> | Observable<User> | User;
+  authenticate(
+    request: Authentication,
+  ): Promise<User> | Observable<User> | User;
 
-  login(request: LoginRequest): Promise<LoginResponse> | Observable<LoginResponse> | LoginResponse;
+  login(
+    request: LoginRequest,
+  ): Promise<LoginResponse> | Observable<LoginResponse> | LoginResponse;
 
-  createUser(request: CreateUserRequest): Promise<User> | Observable<User> | User;
+  refresh(
+    request: RefreshRequest,
+  ): Promise<LoginResponse> | Observable<LoginResponse> | LoginResponse;
 
-  deleteUser(request: DeleteUserRequest): Promise<User> | Observable<User> | User;
+  logout(
+    request: RefreshRequest,
+  ): Promise<LogoutResponse> | Observable<LogoutResponse> | LogoutResponse;
+
+  createUser(
+    request: CreateUserRequest,
+  ): Promise<User> | Observable<User> | User;
+
+  deleteUser(
+    request: DeleteUserRequest,
+  ): Promise<User> | Observable<User> | User;
 }
 
 export function AuthServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["authenticate", "login", "createUser", "deleteUser"];
+    const grpcMethods: string[] = [
+      'authenticate',
+      'login',
+      'refresh',
+      'logout',
+      'createUser',
+      'deleteUser',
+    ];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("AuthService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcMethod('AuthService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("AuthService", method)(constructor.prototype[method], method, descriptor);
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(
+        constructor.prototype,
+        method,
+      );
+      GrpcStreamMethod('AuthService', method)(
+        constructor.prototype[method],
+        method,
+        descriptor,
+      );
     }
   };
 }
 
-export const AUTH_SERVICE_NAME = "AuthService";
+export const AUTH_SERVICE_NAME = 'AuthService';
