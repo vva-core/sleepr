@@ -22,6 +22,8 @@ import { LocalStrategy } from './strategies/local.strategy';
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRY: Joi.string().required(),
+        JWT_REFRESH_SECRET: Joi.string().required(),
+        JWT_REFRESH_EXPIRY: Joi.string().required(),
         TCP_PORT: Joi.number().required(),
         DATABASE_URL: Joi.string().required(),
         HTTP_PORT: Joi.number().required(),
