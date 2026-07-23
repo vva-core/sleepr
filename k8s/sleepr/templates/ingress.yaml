@@ -19,13 +19,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: reservations
+                name: gateway
                 port:
-                  number: 3000
-          - path: /auth
-            pathType: Prefix
-            backend:
-              service:
-                name: auth-http
-                port:
-                  number: 3001
+                  number: 3003

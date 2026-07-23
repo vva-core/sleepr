@@ -1,10 +1,13 @@
 import {
   CurrentUser,
+  JwtAuthGuard,
   PaymentDto,
   PAYMENTS_SERVICE_NAME,
   PaymentsServiceClient,
+  Roles,
   type User,
 } from '@app/common';
+import { RoleGuard } from '@app/common/guards';
 import {
   Body,
   Controller,
@@ -17,9 +20,9 @@ import {
 import { type ClientGrpc } from '@nestjs/microservices';
 import { ConfirmPaymentDto } from './dto/payments.dto';
 import { firstValueFrom } from 'rxjs';
-import { JwtAuthGuard } from '@app/common';
 
-@UseGuards(JwtAuthGuard)
+@Roles('user')
+@UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('payments')
 export class PaymentsController implements OnModuleInit {
   private paymentsServiceClient: PaymentsServiceClient;

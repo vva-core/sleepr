@@ -3,21 +3,31 @@ import {
   JwtAuthGuard,
   RESERVATION_SERVICE_NAME,
   ReservationServiceClient,
+  Roles,
   type User,
 } from '@app/common';
+import { RoleGuard } from '@app/common/guards';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   OnModuleInit,
+  Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { CreateReservationDto } from './dto/reservation.dto';
 import { firstValueFrom } from 'rxjs';
-@UseGuards(JwtAuthGuard)
+import {
+  CreateReservationDto,
+  UpdateReservationDto,
+} from './dto/reservation.dto';
+
+@Roles('user')
+@UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('reservations')
 export class ReservationsController implements OnModuleInit {
   private reservationsClient: ReservationServiceClient;
@@ -46,5 +56,27 @@ export class ReservationsController implements OnModuleInit {
   @Get()
   async findAll() {
     return await firstValueFrom(this.reservationsClient.findAll({}));
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return await firstValueFrom(this.reservationsClient.findOne({ id }));
+  }
+
+  @Roles('admin')
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateReservationDto: UpdateReservationDto,
+  ) {
+    return await firstValueFrom(
+      this.reservationsClient.update({ id, ...updateReservationDto }),
+    );
+  }
+
+  @Roles('admin')
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    return await firstValueFrom(this.reservationsClient.remove({ id }));
   }
 }

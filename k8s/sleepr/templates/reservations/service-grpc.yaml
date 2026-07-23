@@ -3,13 +3,13 @@ kind: Service
 metadata:
   labels:
     app: reservations
-  name: reservations
+  name: reservations-grpc
 spec:
   ports:
-    - name: reservations-http
-      port: 3000
+    - name: reservations-grpc
+      port: 50052
       protocol: TCP
-      targetPort: 3000
+      targetPort: 50052
   selector:
     app: reservations
   type: ClusterIP

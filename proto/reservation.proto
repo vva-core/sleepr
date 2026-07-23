@@ -34,7 +34,25 @@ message ReservationsList {
   repeated Reservation reservations = 1;
 }
 
+message FindOneReservationRequest {
+  string id = 1;
+}
+
+message UpdateReservationRequest {
+  string id = 1;
+  optional string start_date = 2;
+  optional string end_date = 3;
+  optional string place_id = 4;
+}
+
+message RemoveReservationRequest {
+  string id = 1;
+}
+
 service ReservationService {
   rpc create(CreateReservationRequest) returns (Reservation);
   rpc findAll(google.protobuf.Empty) returns (ReservationsList);
+  rpc findOne(FindOneReservationRequest) returns (Reservation);
+  rpc update(UpdateReservationRequest) returns (Reservation);
+  rpc remove(RemoveReservationRequest) returns (Reservation);
 }

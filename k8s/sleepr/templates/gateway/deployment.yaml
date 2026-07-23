@@ -24,5 +24,11 @@ spec:
           env:
             - name: PORT
               value: '3003'
+            - name: AUTH_GRPC_URL
+              value: 'auth-grpc:50051'
+            - name: RESERVATIONS_GRPC_URL
+              value: 'reservations-grpc:50052'
+            - name: PAYMENTS_GRPC_URL
+              value: 'payments-grpc:50053'
           ports:
             - containerPort: 3003

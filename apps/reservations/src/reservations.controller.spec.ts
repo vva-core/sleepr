@@ -1,44 +1,105 @@
+import { $Enums, Reservation } from '@app/common/prisma/generated/prisma';
 import { Test, TestingModule } from '@nestjs/testing';
+import { toProto } from './reservation.mapper';
 import { ReservationsController } from './reservations.controller';
 import { ReservationsService } from './reservations.service';
-import { PAYMENTS_SERVICE_NAME } from '@app/common/types/proto/payments';
-import { JwtAuthGuard } from '@app/common/auth';
-import { RoleGuard } from '@app/common/guards';
+
+const reservation: Reservation = {
+  id: '1',
+  startDate: new Date('2026-07-17T00:00:00.000Z'),
+  endDate: new Date('2026-07-24T00:00:00.000Z'),
+  userId: 'user-1',
+  placeId: 'place-1',
+  createdAt: new Date('2026-07-01T00:00:00.000Z'),
+  updatedAt: new Date('2026-07-05T00:00:00.000Z'),
+  status: $Enums.ReservationStatus.PENDING,
+};
 
 describe('ReservationsController', () => {
-  let reservationsController: ReservationsController;
+  let controller: ReservationsController;
+  const reservationsService = {
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
+  };
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [ReservationsController],
       providers: [
-        {
-          provide: ReservationsService,
-          useValue: {
-            create: jest.fn(),
-            findAll: jest.fn(),
-            findOne: jest.fn(),
-            update: jest.fn(),
-            remove: jest.fn(),
-          },
-        },
-        { provide: PAYMENTS_SERVICE_NAME, useValue: { getService: jest.fn() } },
+        { provide: ReservationsService, useValue: reservationsService },
       ],
-    })
-      .overrideGuard(JwtAuthGuard)
-      .useValue({ canActivate: () => true })
-      .overrideGuard(RoleGuard)
-      .useValue({ canActivate: () => true })
-      .compile();
+    }).compile();
 
-    reservationsController = app.get<ReservationsController>(
-      ReservationsController,
-    );
+    controller = app.get<ReservationsController>(ReservationsController);
   });
 
-  describe('root', () => {
-    it('should be defined', () => {
-      expect(reservationsController).toBeTruthy();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeTruthy();
+  });
+
+  it('returns a created reservation', async () => {
+    reservationsService.create.mockResolvedValueOnce(reservation);
+
+    await expect(
+      controller.create({
+        startDate: reservation.startDate.toISOString(),
+        endDate: reservation.endDate.toISOString(),
+        placeId: reservation.placeId,
+        userId: reservation.userId,
+      }),
+    ).resolves.toEqual(toProto(reservation));
+  });
+
+  it('returns a list of reservations', async () => {
+    reservationsService.findAll.mockResolvedValueOnce([reservation]);
+
+    await expect(controller.findAll()).resolves.toEqual({
+      reservations: [toProto(reservation)],
     });
+  });
+
+  it('returns a reservation by id', async () => {
+    reservationsService.findOne.mockResolvedValueOnce(reservation);
+
+    await expect(controller.findOne({ id: '1' })).resolves.toEqual(
+      toProto(reservation),
+    );
+    expect(reservationsService.findOne).toHaveBeenCalledWith('1');
+  });
+
+  it('returns an updated reservation', async () => {
+    const updateData = { placeId: 'place-2' };
+    reservationsService.update.mockResolvedValueOnce({
+      ...reservation,
+      ...updateData,
+    });
+
+    await expect(
+      controller.update({ id: '1', placeId: 'place-2' }),
+    ).resolves.toEqual(
+      toProto({
+        ...reservation,
+        ...updateData,
+      }),
+    );
+    expect(reservationsService.update).toHaveBeenCalledWith('1', {
+      placeId: 'place-2',
+    });
+  });
+
+  it('returns a removed reservation', async () => {
+    reservationsService.remove.mockResolvedValueOnce(reservation);
+
+    await expect(controller.remove({ id: '1' })).resolves.toEqual(
+      toProto(reservation),
+    );
+    expect(reservationsService.remove).toHaveBeenCalledWith('1');
   });
 });

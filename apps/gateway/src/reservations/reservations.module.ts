@@ -5,6 +5,7 @@ import {
   RESERVATION_SERVICE_NAME,
   RESERVATIONS_PACKAGE_NAME,
   JwtAuthModule,
+  LoggerModule,
 } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
@@ -12,6 +13,7 @@ import { join } from 'path';
 @Module({
   imports: [
     JwtAuthModule,
+    LoggerModule,
     ClientsModule.registerAsync([
       {
         name: RESERVATION_SERVICE_NAME,

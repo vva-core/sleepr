@@ -1,28 +1,17 @@
 import {
   CreateReservationRequest,
+  FindOneReservationRequest,
+  RemoveReservationRequest,
   Reservation,
   ReservationServiceController,
   ReservationServiceControllerMethods,
   ReservationsList,
-  Roles,
+  UpdateReservationRequest,
 } from '@app/common';
-import { JwtAuthGuard } from '@app/common/auth';
-import { RoleGuard } from '@app/common/guards';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  UseGuards,
-} from '@nestjs/common';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { Controller } from '@nestjs/common';
 import { toProto } from './reservation.mapper';
 import { ReservationsService } from './reservations.service';
 
-@Roles('user')
-@UseGuards(JwtAuthGuard, RoleGuard)
 @ReservationServiceControllerMethods()
 @Controller()
 export class ReservationsController implements ReservationServiceController {
@@ -34,26 +23,25 @@ export class ReservationsController implements ReservationServiceController {
 
   async findAll(): Promise<ReservationsList> {
     const reservations = await this.reservationsService.findAll();
+    console.log(
+      `ReservationsController.findAll: ${JSON.stringify(reservations)}`,
+    );
+
     return { reservations: reservations.map(toProto) };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reservationsService.findOne(id);
+  async findOne({ id }: FindOneReservationRequest): Promise<Reservation> {
+    return toProto(await this.reservationsService.findOne(id));
   }
 
-  @Roles('admin')
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateReservationDto: UpdateReservationDto,
-  ) {
-    return this.reservationsService.update(id, updateReservationDto);
+  async update({
+    id,
+    ...data
+  }: UpdateReservationRequest): Promise<Reservation> {
+    return toProto(await this.reservationsService.update(id, data));
   }
 
-  @Roles('admin')
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reservationsService.remove(id);
+  async remove({ id }: RemoveReservationRequest): Promise<Reservation> {
+    return toProto(await this.reservationsService.remove(id));
   }
 }

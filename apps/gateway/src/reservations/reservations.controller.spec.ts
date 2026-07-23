@@ -1,16 +1,13 @@
 import { JwtAuthGuard, RESERVATION_SERVICE_NAME, User } from '@app/common';
+import { RoleGuard } from '@app/common/guards';
 import { Test } from '@nestjs/testing';
-import { ReservationsController } from './reservations.controller';
 import { of } from 'rxjs';
-
-const payment = {
-  clientSecret: '123',
-};
+import { ReservationsController } from './reservations.controller';
 
 const reservation = {
   id: '1',
-  startDate: '07-17-2026',
-  endDate: '07-24-2026',
+  startDate: '2026-07-17T00:00:00.000Z',
+  endDate: '2026-07-24T00:00:00.000Z',
   userId: '1',
   placeId: '1',
   createdAt: '',
@@ -31,7 +28,10 @@ describe('Gateway Reservation Controller', () => {
   let controller: ReservationsController;
   const reservationClient = {
     create: jest.fn(),
-    createReservationPayment: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
   };
   const clientGrpc = {
     getService: jest.fn(() => reservationClient),
@@ -43,6 +43,8 @@ describe('Gateway Reservation Controller', () => {
       providers: [{ provide: RESERVATION_SERVICE_NAME, useValue: clientGrpc }],
     })
       .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(RoleGuard)
       .useValue({ canActivate: () => true })
       .compile();
 
@@ -58,11 +60,11 @@ describe('Gateway Reservation Controller', () => {
     expect(controller).toBeTruthy();
   });
 
-  it('should create reservation through reservation client', async () => {
+  it('returns the created reservation', async () => {
     reservationClient.create.mockReturnValueOnce(of(reservation));
 
-    expect(
-      await controller.create(
+    await expect(
+      controller.create(
         {
           endDate: reservation.endDate,
           placeId: reservation.placeId,
@@ -70,10 +72,43 @@ describe('Gateway Reservation Controller', () => {
         },
         user,
       ),
-    ).toEqual(reservation);
+    ).resolves.toEqual(reservation);
+    expect(reservationClient.create).toHaveBeenCalled();
   });
 
-  it('should create reservation payment', () => {
-    reservationClient.createReservationPayment.mockReturnValueOnce(of(payment));
+  it('returns the reservations list', async () => {
+    reservationClient.findAll.mockReturnValueOnce(
+      of({ reservations: [reservation] }),
+    );
+
+    await expect(controller.findAll()).resolves.toEqual({
+      reservations: [reservation],
+    });
+  });
+
+  it('returns a single reservation', async () => {
+    reservationClient.findOne.mockReturnValueOnce(of(reservation));
+
+    await expect(controller.findOne('1')).resolves.toEqual(reservation);
+    expect(reservationClient.findOne).toHaveBeenCalled();
+  });
+
+  it('returns the updated reservation', async () => {
+    const dataToUpdate = { placeId: 'place-2' };
+    reservationClient.update.mockReturnValueOnce(
+      of({ ...reservation, ...dataToUpdate }),
+    );
+
+    await expect(
+      controller.update('1', { placeId: 'place-2' }),
+    ).resolves.toEqual({ ...reservation, ...dataToUpdate });
+    expect(reservationClient.update).toHaveBeenCalled();
+  });
+
+  it('returns the removed reservation', async () => {
+    reservationClient.remove.mockReturnValueOnce(of(reservation));
+
+    await expect(controller.remove('1')).resolves.toEqual(reservation);
+    expect(reservationClient.remove).toHaveBeenCalled();
   });
 });

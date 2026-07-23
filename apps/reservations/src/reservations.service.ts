@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationsRepository } from './reservations.repository';
-import { CreateReservationRequest } from '@app/common';
+import {
+  CreateReservationRequest,
+  UpdateReservationRequest,
+} from '@app/common';
+import { RpcException } from '@nestjs/microservices';
+import { status } from '@grpc/grpc-js';
 
 @Injectable()
 export class ReservationsService {
@@ -17,12 +21,21 @@ export class ReservationsService {
     return this.reservationsRepository.findAll();
   }
 
-  findOne(id: string) {
-    return this.reservationsRepository.findOne(id);
+  async findOne(id: string) {
+    const reservation = await this.reservationsRepository.findOne(id);
+
+    if (!reservation) {
+      throw new RpcException({
+        code: status.NOT_FOUND,
+        message: `Reservation #${id} not found`,
+      });
+    }
+
+    return reservation;
   }
 
-  update(id: string, updateReservationDto: UpdateReservationDto) {
-    return this.reservationsRepository.update(id, updateReservationDto);
+  update(id: string, data: Omit<UpdateReservationRequest, 'id'>) {
+    return this.reservationsRepository.update(id, data);
   }
 
   remove(id: string) {

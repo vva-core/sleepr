@@ -3,7 +3,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import { ReservationsModule } from './reservations.module';
 import { ConfigService } from '@nestjs/config';
-import cookieParser from 'cookie-parser';
 import { PAYMENTS_EXCHANGE, RESERVATIONS_QUEUE } from '@app/common/consts';
 import { setupRmqTopology } from '@app/common/rmq';
 import { GrpcOptions, RmqOptions, Transport } from '@nestjs/microservices';
@@ -53,7 +52,6 @@ async function bootstrap() {
     },
   });
 
-  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -64,6 +62,6 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
 
   await app.startAllMicroservices();
-  await app.listen(configService.getOrThrow('PORT'));
+  await app.listen(configService.getOrThrow<number>('PORT'));
 }
 void bootstrap();

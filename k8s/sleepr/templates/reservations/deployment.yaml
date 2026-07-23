@@ -24,10 +24,8 @@ spec:
           env:
             - name: PORT
               value: '3000'
-            - name: AUTH_GRPC_URL
-              value: 'auth-grpc:50051'
-            - name: PAYMENTS_GRPC_URL
-              value: 'payments-grpc:50053'
+            - name: RESERVATIONS_GRPC_URL
+              value: '0.0.0.0:50052'
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -40,3 +38,20 @@ spec:
                   key: rabbitmqUrl
           ports:
             - containerPort: 3000
+            - containerPort: 50052
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3

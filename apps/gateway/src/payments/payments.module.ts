@@ -3,6 +3,7 @@ import { PaymentsController } from './payments.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
   JwtAuthModule,
+  LoggerModule,
   PAYMENTS_PACKAGE_NAME,
   PAYMENTS_SERVICE_NAME,
 } from '@app/common';
@@ -12,6 +13,7 @@ import { join } from 'path';
 @Module({
   imports: [
     JwtAuthModule,
+    LoggerModule,
     ClientsModule.registerAsync([
       {
         name: PAYMENTS_SERVICE_NAME,
