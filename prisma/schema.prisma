@@ -49,7 +49,21 @@ model User {
     updatedAt DateTime @updatedAt
     roles     String[] @default(["user"])
 
-    reservations Reservation[]
+    reservations  Reservation[]
+    refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+    id        String    @id
+    userId    String
+    tokenHash String
+    expiresAt DateTime
+    revokedAt DateTime?
+    createdAt DateTime  @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model Payments {
