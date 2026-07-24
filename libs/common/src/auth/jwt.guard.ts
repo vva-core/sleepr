@@ -8,6 +8,7 @@ import {
 import type { ClientGrpc } from '@nestjs/microservices';
 import { catchError, map, Observable, of } from 'rxjs';
 
+import { AUTH_COOKIE } from '../consts/cookies';
 import { LoggerService } from '../logger/logger.service';
 import {
   AUTH_SERVICE_NAME,
@@ -33,7 +34,7 @@ export class JwtAuthGuard implements CanActivate, OnModuleInit {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const jwt = request.cookies['Authentication'];
+    const jwt = request.cookies[AUTH_COOKIE];
 
     if (!jwt) {
       this.logger.warn('No JWT found');
