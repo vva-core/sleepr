@@ -9,7 +9,9 @@ import Joi from 'joi';
 import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
 import { UserRepository } from './user/user.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     HealthModule,
     LoggerModule,
     UserModule,
+    RefreshTokenModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
@@ -43,6 +46,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     UserService,
     UserRepository,
     JwtStrategy,
+    JwtRefreshStrategy,
     LocalStrategy,
   ],
 })
