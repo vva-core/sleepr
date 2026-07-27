@@ -38,7 +38,14 @@ spec:
                   name: jwt-secret
                   key: jwtSecret
             - name: JWT_EXPIRY
-              value: '3600s'
+              value: '900s'
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: jwtRefreshSecret
+            - name: JWT_REFRESH_EXPIRY
+              value: '7d'
           ports:
             - containerPort: 3001
             - containerPort: 50051

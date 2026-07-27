@@ -9,7 +9,9 @@ import Joi from 'joi';
 import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
 import { UserRepository } from './user/user.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 
 @Module({
   imports: [
@@ -17,11 +19,14 @@ import { LocalStrategy } from './strategies/local.strategy';
     HealthModule,
     LoggerModule,
     UserModule,
+    RefreshTokenModule,
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
         JWT_SECRET: Joi.string().required(),
         JWT_EXPIRY: Joi.string().required(),
+        JWT_REFRESH_SECRET: Joi.string().required(),
+        JWT_REFRESH_EXPIRY: Joi.string().required(),
         TCP_PORT: Joi.number().required(),
         DATABASE_URL: Joi.string().required(),
         HTTP_PORT: Joi.number().required(),
@@ -41,6 +46,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     UserService,
     UserRepository,
     JwtStrategy,
+    JwtRefreshStrategy,
     LocalStrategy,
   ],
 })
