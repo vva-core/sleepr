@@ -48,6 +48,14 @@ lerna-debug.log*
 
 # Runtime data
 pids
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.*
+terraform.rc
+.terraformrc
 *.pid
 *.seed
 *.pid.lock
