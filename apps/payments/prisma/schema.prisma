@@ -1,0 +1,33 @@
+// Payments owns this schema exclusively. It is generated and migrated on its own,
+// independently of the root schema in /prisma.
+//
+// There is deliberately no relation to Reservation: the two models live in
+// different databases, so the foreign key that used to back `reservationId`
+// (Payments_reservationId_fkey) is not merely removed but unexpressible.
+// Existence of the referenced reservation is the service's concern, not the DB's.
+
+generator client {
+    provider     = "prisma-client-js"
+    output       = "../src/prisma/generated"
+    moduleFormat = "cjs"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+enum PaymentStatus {
+    PENDING
+    SUCCEEDED
+    FAILED
+    CANCELLED
+}
+
+model Payments {
+    id                    String        @id @default(cuid())
+    reservationId         String        @unique
+    amount                Float
+    status                PaymentStatus @default(PENDING)
+    createdAt             DateTime      @default(now())
+    stripePaymentIntentId String
+}
