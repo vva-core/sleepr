@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { IBaseRepository, PrismaService } from '@app/common';
-import { Payments, PaymentStatus } from '@app/common/prisma/generated/prisma';
+import { IBaseRepository } from '@app/common';
+import { Payments, PaymentStatus } from './prisma/generated';
+import { PaymentsPrismaService } from './database/payments-prisma.service';
 
 export interface CreatePaymentDto {
   reservationId: string;
@@ -18,7 +19,7 @@ export class PaymentsRepository implements IBaseRepository<
   CreatePaymentDto,
   UpdatePaymentDto
 > {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PaymentsPrismaService) {}
 
   async create(
     data: CreatePaymentDto & { stripePaymentIntentId: string },

@@ -1,7 +1,7 @@
 import {
   Payments,
   PaymentStatus as PrismaPaymentStatus,
-} from '@app/common/prisma/generated/prisma';
+} from './prisma/generated';
 import {
   CreatePaymentResponse,
   Payment,
