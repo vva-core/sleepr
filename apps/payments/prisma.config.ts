@@ -1,5 +1,6 @@
+import { join } from 'path';
 import { config } from 'dotenv';
-config({ path: 'apps/payments/.env' });
+config({ path: join(__dirname, '.env') });
 
 import { defineConfig, env } from 'prisma/config';
 

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IBaseRepository } from '@app/common';
 import { Payments, PaymentStatus } from './prisma/generated';
 import { PaymentsPrismaService } from './database/payments-prisma.service';
@@ -33,30 +33,18 @@ export class PaymentsRepository implements IBaseRepository<
     return await this.prisma.payments.findMany();
   }
 
-  async findOne(id: string): Promise<Payments> {
-    const payment = await this.prisma.payments.findUnique({
+  async findOne(id: string): Promise<Payments | null> {
+    return await this.prisma.payments.findUnique({
       where: { id },
     });
-
-    if (!payment) {
-      throw new NotFoundException(`Payment #${id} not found`);
-    }
-
-    return payment;
   }
 
-  async findByStripeIntentId(stripePaymentIntentId: string): Promise<Payments> {
-    const payment = await this.prisma.payments.findFirst({
+  async findByStripeIntentId(
+    stripePaymentIntentId: string,
+  ): Promise<Payments | null> {
+    return await this.prisma.payments.findFirst({
       where: { stripePaymentIntentId },
     });
-
-    if (!payment) {
-      throw new NotFoundException(
-        `Payment for intent ${stripePaymentIntentId} not found`,
-      );
-    }
-
-    return payment;
   }
 
   async update(id: string, data: UpdatePaymentDto): Promise<Payments> {

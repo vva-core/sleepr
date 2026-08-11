@@ -58,6 +58,11 @@ export class PaymentsService {
     const existing = await this.paymentsRepository.findByStripeIntentId(
       intent.id,
     );
+
+    if (!existing) {
+      throw new RpcException(`Payment for intent ${intent.id} not found`);
+    }
+
     const updated = await this.paymentsRepository.update(existing.id, {
       amount: existing.amount,
       status: fromStripeStatus(intent.status),
