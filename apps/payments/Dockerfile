@@ -7,8 +7,6 @@ COPY yarn.lock ./
 COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 COPY apps/payments/package.json apps/payments/package.json
-COPY prisma ./prisma
-COPY prisma.config.ts prisma.config.ts
 
 COPY apps/payments apps/payments
 COPY libs libs
@@ -16,7 +14,7 @@ COPY libs libs
 RUN yarn install
 RUN cd apps/payments && yarn install
 
-RUN npx prisma generate
+RUN npx prisma generate --config apps/payments/prisma.config.ts
 RUN yarn build payments
 
 FROM node:22-alpine AS production
@@ -29,7 +27,7 @@ ENV NODE_ENV=${NODE_ENV}
 COPY --from=development /usr/src/app/dist ./dist
 COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY --from=development /usr/src/app/apps/payments/node_modules ./apps/payments/node_modules
-COPY --from=development /usr/src/app/prisma ./prisma
-COPY --from=development /usr/src/app/prisma.config.ts ./prisma.config.ts
+COPY --from=development /usr/src/app/apps/payments/prisma ./apps/payments/prisma
+COPY --from=development /usr/src/app/apps/payments/prisma.config.ts ./apps/payments/prisma.config.ts
 
 CMD ["node", "dist/apps/payments/main.js"]

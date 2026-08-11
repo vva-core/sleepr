@@ -21,7 +21,7 @@ Layers of the system:
 | Services       | `apps/*`      | Deployable NestJS processes: gateway, auth, reservations, payments, notifications |
 | Shared library | `libs/common` | Modules + primitives imported via the `@app/common` alias                         |
 | Contracts      | `proto/`      | gRPC service/message contracts (governed by `COMM-*`)                             |
-| Data           | `prisma/`     | Single schema + migrations; client generated into `libs/common`                   |
+| Data           | `prisma/`, `apps/*/prisma/` | Per-owner schema + migration history; client generated beside its owner |
 
 ---
 
@@ -70,19 +70,33 @@ outside the gateway.
 env shared/mutated across services; environment access outside the owning service's
 `ConfigModule`.
 
-## ARCH-4: Layered data access over one shared database
+## ARCH-4: Layered data access over a database the service owns
 
-- The project uses one shared Database.
-- The project uses Prisma as an ORM for communication with DB.
-- The DB extracted into separate module Database Module in libs/common and every module that needs talk to DB just imports it.
-- Every microservice that talk to the DB implements Repository pattern. Every Repository implements IBaseRepository located in libs/common.
-- `PrismaService` is injected **only** into repositories — controllers and services go
+- The project uses Prisma as its ORM.
+- **Database-per-service is the target state.** A service that owns its data owns the
+  whole vertical: its `apps/<svc>/prisma/schema.prisma`, its own migration history, its
+  own generated client (`apps/<svc>/src/prisma/generated`), its own `DATABASE_URL`, and
+  its own Prisma module + service under `apps/<svc>/src/database/`. **payments** is
+  fully extracted and is the reference implementation.
+- _Migration note:_ **auth and reservations still share** the root `prisma/schema.prisma`,
+  the `sleepr` database, and the `DatabaseModule`/`PrismaService` in `libs/common`. That
+  is legacy, not the pattern to copy. Flag **new** models added to the root schema by a
+  service that should own them; do not flag the pre-existing shared surface.
+- **A model belongs to exactly one schema file.** Cross-service relations are not
+  merely discouraged — across separate databases a foreign key is *unexpressible*.
+  Where one used to be, the reference survives as a plain scalar id, and existence is
+  checked over gRPC (`COMM-4`), not by the database.
+- Every service that talks to a DB implements the Repository pattern, and every
+  repository implements `IBaseRepository` from `libs/common` — this contract stays
+  shared even though the clients do not.
+- A Prisma service is injected **only** into repositories — controllers and services go
   through their repository, never Prisma directly (layering: Controller → Service →
   Repository → Prisma).
 
-**Violation:** `PrismaService` injected into a controller or service; a service running
+**Violation:** a Prisma service injected into a controller or service; a service running
 Prisma/SQL queries instead of going through its repository; a repository that does not
-implement `IBaseRepository`; a service introducing its own schema or a second datasource.
+implement `IBaseRepository`; an extracted service reaching back into the shared client or
+root schema; a relation declared across two services' models.
 
 ## ARCH-5: Cross-cutting concerns come from `libs/common`, not reimplemented
 
@@ -90,6 +104,9 @@ implement `IBaseRepository`; a service introducing its own schema or a second da
   gRPC-backed `JwtAuthGuard`, param decorators (`CurrentUser`, `Roles`), and the
   RabbitMQ `BasePublisher` are provided once in `libs/common` and imported by services.
 - A service MUST reuse these shared primitives rather than reimplementing them.
+- `DatabaseModule` / `PrismaService` are **not** in this list. Database access is owned
+  per service (`ARCH-4`); the shared copies exist only for the services not yet
+  extracted. A per-service Prisma module is the pattern, not a duplication.
 
 **Violation:** a service defining its own logger, `/health` endpoint, or auth guard; a
 second publisher base class; bespoke copies of shared decorators.

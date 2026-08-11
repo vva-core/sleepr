@@ -23,10 +23,12 @@ spec:
         - image: 805102730154.dkr.ecr.eu-north-1.amazonaws.com/sleepr/payments:latest
           name: payments
           env:
+            # Payments' own database — deliberately NOT the shared `database-url`
+            # secret that auth and reservations read.
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: database-url
+                  name: payments-database-url
                   key: databaseUrl
             - name: STRIPE_SECRET_KEY
               valueFrom:
