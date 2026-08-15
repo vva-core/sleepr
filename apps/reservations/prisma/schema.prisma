@@ -1,0 +1,34 @@
+// Reservations owns this schema exclusively. It is generated and migrated on its own,
+// independently of the root schema in /prisma.
+//
+// `userId` is a plain scalar, not a relation: User lives in auth's database, so the
+// foreign key that used to back it (Reservation_userId_fkey) is not merely removed but
+// unexpressible. Existence of the referenced user is the service's concern, not the DB's.
+
+generator client {
+    provider     = "prisma-client-js"
+    output       = "../src/prisma/generated"
+    moduleFormat = "cjs"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+enum ReservationStatus {
+    PENDING
+    CONFIRMED
+    CANCELLED
+    COMPLETED
+}
+
+model Reservation {
+    id        String            @id @default(cuid())
+    startDate DateTime
+    endDate   DateTime
+    userId    String
+    placeId   String
+    createdAt DateTime          @default(now())
+    updatedAt DateTime          @updatedAt
+    status    ReservationStatus @default(PENDING)
+}

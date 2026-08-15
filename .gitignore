@@ -57,6 +57,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 /libs/common/src/prisma/generated/prisma
 /apps/payments/src/prisma/generated
+/apps/reservations/src/prisma/generated
 todo.md
 todo.personal.txt
 
