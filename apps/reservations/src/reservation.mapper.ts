@@ -1,8 +1,5 @@
 import { Reservation, ReservationStatus } from '@app/common';
-import {
-  $Enums,
-  Reservation as PrismaReservation,
-} from '@app/common/prisma/generated/prisma';
+import { $Enums, Reservation as PrismaReservation } from './prisma/generated';
 
 const PRISMA_TO_PROTO_STATUS_MAP: Record<
   $Enums.ReservationStatus,
