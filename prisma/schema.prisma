@@ -13,26 +13,6 @@ datasource db {
     provider = "postgresql"
 }
 
-enum ReservationStatus {
-    PENDING
-    CONFIRMED
-    CANCELLED
-    COMPLETED
-}
-
-model Reservation {
-    id        String            @id @default(cuid())
-    startDate DateTime
-    endDate   DateTime
-    userId    String
-    placeId   String
-    createdAt DateTime          @default(now())
-    updatedAt DateTime          @updatedAt
-    status    ReservationStatus @default(PENDING)
-
-    user User @relation(fields: [userId], references: [id])
-}
-
 model User {
     id        String   @id @default(cuid())
     email     String   @unique
@@ -41,7 +21,6 @@ model User {
     updatedAt DateTime @updatedAt
     roles     String[] @default(["user"])
 
-    reservations  Reservation[]
     refreshTokens RefreshToken[]
 }
 

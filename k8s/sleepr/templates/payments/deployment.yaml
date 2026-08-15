@@ -24,7 +24,7 @@ spec:
           name: payments
           env:
             # Payments' own database — deliberately NOT the shared `database-url`
-            # secret that auth and reservations read.
+            # secret that auth reads.
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
