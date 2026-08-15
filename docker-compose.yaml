@@ -44,7 +44,8 @@ services:
       - /usr/src/app/apps/payments/node_modules
     ports:
       - '50053:50053'
-    command: sh -c "npx prisma migrate deploy && yarn start:dev payments"
+    # payments owns its schema and migration history — must NOT use the root config
+    command: sh -c "npx prisma migrate deploy --config apps/payments/prisma.config.ts && yarn start:dev payments"
     env_file:
       - apps/payments/.env
     depends_on:

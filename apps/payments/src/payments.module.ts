@@ -1,4 +1,4 @@
-import { DatabaseModule, LoggerModule } from '@app/common';
+import { LoggerModule } from '@app/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import Joi from 'joi';
@@ -7,11 +7,12 @@ import { PaymentsRepository } from './payments.repository';
 import { PaymentsService } from './payments.service';
 import { StripeModule } from './stripe/stripe.module';
 import { PaymentsPublisher } from './payments.publisher';
+import { PaymentsDatabaseModule } from './database/payments-database.module';
 
 @Module({
   imports: [
     StripeModule,
-    DatabaseModule,
+    PaymentsDatabaseModule,
     LoggerModule,
     ConfigModule.forRoot({
       isGlobal: true,

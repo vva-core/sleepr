@@ -20,13 +20,6 @@ enum ReservationStatus {
     COMPLETED
 }
 
-enum PaymentStatus {
-    PENDING
-    SUCCEEDED
-    FAILED
-    CANCELLED
-}
-
 model Reservation {
     id        String            @id @default(cuid())
     startDate DateTime
@@ -37,8 +30,7 @@ model Reservation {
     updatedAt DateTime          @updatedAt
     status    ReservationStatus @default(PENDING)
 
-    user     User      @relation(fields: [userId], references: [id])
-    payments Payments?
+    user User @relation(fields: [userId], references: [id])
 }
 
 model User {
@@ -64,15 +56,4 @@ model RefreshToken {
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@index([userId])
-}
-
-model Payments {
-    id                    String        @id @default(cuid())
-    reservationId         String        @unique
-    amount                Float
-    status                PaymentStatus @default(PENDING)
-    createdAt             DateTime      @default(now())
-    stripePaymentIntentId String
-
-    reservation Reservation @relation(fields: [reservationId], references: [id])
 }

@@ -10,17 +10,20 @@ export class StripeService {
     this.stripe = new Stripe(configService.getOrThrow('STRIPE_SECRET_KEY'));
   }
 
-  async createPaymentIntent({
-    amount,
-    currency,
-  }: Stripe.PaymentIntentCreateParams) {
-    const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: amount * 100,
-      currency,
-      automatic_payment_methods: {
-        enabled: true,
+  async createPaymentIntent(
+    { amount, currency }: Stripe.PaymentIntentCreateParams,
+    idempotencyKey: string,
+  ) {
+    const paymentIntent = await this.stripe.paymentIntents.create(
+      {
+        amount: amount * 100,
+        currency,
+        automatic_payment_methods: {
+          enabled: true,
+        },
       },
-    });
+      { idempotencyKey },
+    );
 
     return paymentIntent;
   }

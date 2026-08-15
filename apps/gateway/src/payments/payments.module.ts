@@ -6,6 +6,8 @@ import {
   LoggerModule,
   PAYMENTS_PACKAGE_NAME,
   PAYMENTS_SERVICE_NAME,
+  RESERVATION_SERVICE_NAME,
+  RESERVATIONS_PACKAGE_NAME,
 } from '@app/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
@@ -23,6 +25,21 @@ import { join } from 'path';
             package: PAYMENTS_PACKAGE_NAME,
             url: configService.getOrThrow('PAYMENTS_GRPC_URL'),
             protoPath: join(__dirname, '../../../proto/payments.proto'),
+            loader: {
+              includeDirs: [join(__dirname, '../../../proto')],
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: RESERVATION_SERVICE_NAME,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: RESERVATIONS_PACKAGE_NAME,
+            url: configService.getOrThrow('RESERVATIONS_GRPC_URL'),
+            protoPath: join(__dirname, '../../../proto/reservation.proto'),
             loader: {
               includeDirs: [join(__dirname, '../../../proto')],
             },
