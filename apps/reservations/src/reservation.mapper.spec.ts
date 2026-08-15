@@ -1,5 +1,5 @@
 import { ReservationStatus } from '@app/common';
-import { $Enums, Reservation } from '@app/common/prisma/generated/prisma';
+import { $Enums, Reservation } from './prisma/generated';
 import { toProto } from './reservation.mapper';
 
 const reservation: Reservation = {

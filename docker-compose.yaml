@@ -10,7 +10,7 @@ services:
       - /usr/src/app/apps/reservations/node_modules
     ports:
       - '3000:3000'
-    command: sh -c "npx prisma migrate deploy && yarn start:dev reservations"
+    command: sh -c "npx prisma migrate deploy --config apps/reservations/prisma.config.ts && yarn start:dev reservations"
     env_file:
       - apps/reservations/.env
     depends_on:

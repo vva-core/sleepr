@@ -1,4 +1,4 @@
-import { $Enums, Reservation } from '@app/common/prisma/generated/prisma';
+import { $Enums, Reservation } from './prisma/generated';
 import { Test, TestingModule } from '@nestjs/testing';
 import { toProto } from './reservation.mapper';
 import { ReservationsController } from './reservations.controller';

@@ -1,18 +1,19 @@
-import { IBaseRepository, PrismaService } from '@app/common';
-import { Prisma, Reservation } from '@app/common/prisma/generated/prisma';
+import { IBaseRepository } from '@app/common';
 import { Injectable } from '@nestjs/common';
+import { Prisma, Reservation } from './prisma/generated';
+import { ReservationsPrismaService } from './database/reservations-prisma.service';
 
+// The checked inputs are usable only while Reservation stays relation-free; adding a
+// relation would reintroduce nested connect/create and require the Unchecked variants.
 @Injectable()
 export class ReservationsRepository implements IBaseRepository<
   Reservation,
-  Prisma.ReservationUncheckedCreateInput,
-  Prisma.ReservationUncheckedUpdateInput
+  Prisma.ReservationCreateInput,
+  Prisma.ReservationUpdateInput
 > {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: ReservationsPrismaService) {}
 
-  async create(
-    data: Prisma.ReservationUncheckedCreateInput,
-  ): Promise<Reservation> {
+  async create(data: Prisma.ReservationCreateInput): Promise<Reservation> {
     return this.prisma.reservation.create({
       data,
     });
@@ -28,7 +29,7 @@ export class ReservationsRepository implements IBaseRepository<
 
   async update(
     id: string,
-    data: Prisma.ReservationUncheckedUpdateInput,
+    data: Prisma.ReservationUpdateInput,
   ): Promise<Reservation> {
     return this.prisma.reservation.update({ where: { id }, data });
   }

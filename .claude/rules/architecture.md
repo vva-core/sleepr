@@ -76,12 +76,13 @@ env shared/mutated across services; environment access outside the owning servic
 - **Database-per-service is the target state.** A service that owns its data owns the
   whole vertical: its `apps/<svc>/prisma/schema.prisma`, its own migration history, its
   own generated client (`apps/<svc>/src/prisma/generated`), its own `DATABASE_URL`, and
-  its own Prisma module + service under `apps/<svc>/src/database/`. **payments** is
-  fully extracted and is the reference implementation.
-- _Migration note:_ **auth and reservations still share** the root `prisma/schema.prisma`,
-  the `sleepr` database, and the `DatabaseModule`/`PrismaService` in `libs/common`. That
-  is legacy, not the pattern to copy. Flag **new** models added to the root schema by a
-  service that should own them; do not flag the pre-existing shared surface.
+  its own Prisma module + service under `apps/<svc>/src/database/`. **payments** and
+  **reservations** are fully extracted and are the reference implementations.
+- _Migration note:_ **auth alone still uses** the root `prisma/schema.prisma`, the `sleepr`
+  database, and the `DatabaseModule`/`PrismaService` in `libs/common`. That is legacy, not
+  the pattern to copy — and with one consumer left, the shared copies exist only until auth
+  is extracted too. Flag **new** models added to the root schema by a service that should
+  own them; do not flag the pre-existing surface.
 - **A model belongs to exactly one schema file.** Cross-service relations are not
   merely discouraged — across separate databases a foreign key is *unexpressible*.
   Where one used to be, the reference survives as a plain scalar id, and existence is
