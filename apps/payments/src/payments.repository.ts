@@ -9,8 +9,8 @@ export interface CreatePaymentDto {
 }
 
 export interface UpdatePaymentDto {
-  status: PaymentStatus;
-  amount: number;
+  status?: PaymentStatus;
+  stripePaymentIntentId?: string;
 }
 
 @Injectable()
@@ -21,9 +21,7 @@ export class PaymentsRepository implements IBaseRepository<
 > {
   constructor(private readonly prisma: PaymentsPrismaService) {}
 
-  async create(
-    data: CreatePaymentDto & { stripePaymentIntentId: string },
-  ): Promise<Payments> {
+  async create(data: CreatePaymentDto): Promise<Payments> {
     return await this.prisma.payments.create({
       data,
     });

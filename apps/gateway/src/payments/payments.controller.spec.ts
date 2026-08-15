@@ -2,11 +2,15 @@ import {
   JwtAuthGuard,
   Payment,
   PAYMENTS_SERVICE_NAME,
+  RESERVATION_SERVICE_NAME,
+  Reservation,
   User,
 } from '@app/common';
 import { RoleGuard } from '@app/common/guards';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import { status } from '@grpc/grpc-js';
 import { Test } from '@nestjs/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { PaymentsController } from './payments.controller';
 
 const user: User = {
@@ -27,11 +31,30 @@ describe('Gateway Payments Controller', () => {
   const clientGrpc = {
     getService: jest.fn(() => paymentsClient),
   };
+  const reservationsClient = { findOne: jest.fn() };
+  const reservationsGrpc = {
+    getService: jest.fn(() => reservationsClient),
+  };
+
+  // Owned by `user` (id '1') — the happy path.
+  const reservation: Reservation = {
+    id: '1',
+    userId: '1',
+    placeId: 'place-1',
+    startDate: '',
+    endDate: '',
+    createdAt: '',
+    updatedAt: '',
+    status: 1,
+  };
 
   beforeEach(async () => {
     const app = await Test.createTestingModule({
       controllers: [PaymentsController],
-      providers: [{ provide: PAYMENTS_SERVICE_NAME, useValue: clientGrpc }],
+      providers: [
+        { provide: PAYMENTS_SERVICE_NAME, useValue: clientGrpc },
+        { provide: RESERVATION_SERVICE_NAME, useValue: reservationsGrpc },
+      ],
     })
       .overrideGuard(JwtAuthGuard)
       .useValue({ canActivate: () => true })
@@ -61,6 +84,7 @@ describe('Gateway Payments Controller', () => {
   });
 
   it('should create payment through payments client', async () => {
+    reservationsClient.findOne.mockReturnValueOnce(of(reservation));
     paymentsClient.createPayment.mockReturnValueOnce(of(payment));
 
     await expect(
@@ -73,14 +97,49 @@ describe('Gateway Payments Controller', () => {
     expect(paymentsClient.createPayment).toHaveBeenCalled();
   });
 
-  it('should confirm payment through payments client', async () => {
-    paymentsClient.confirmPayment.mockReturnValueOnce(of(payment));
+  it('should reject payment for a reservation that does not exist', async () => {
+    reservationsClient.findOne.mockReturnValueOnce(
+      throwError(() => ({ code: status.NOT_FOUND })),
+    );
 
     await expect(
-      controller.confirmReservationPayment({
-        paymentIntentId: '1',
-        paymentMethodId: '1',
-      }),
+      controller.createReservationPayment(
+        { amount: payment.amount, currency: 'usd' },
+        'does-not-exist',
+        user,
+      ),
+    ).rejects.toThrow(NotFoundException);
+    expect(paymentsClient.createPayment).not.toHaveBeenCalled();
+  });
+
+  it('should reject payment for another user reservation', async () => {
+    reservationsClient.findOne.mockReturnValueOnce(
+      of({ ...reservation, userId: 'someone-else' }),
+    );
+
+    await expect(
+      controller.createReservationPayment(
+        { amount: payment.amount, currency: 'usd' },
+        '1',
+        user,
+      ),
+    ).rejects.toThrow(ForbiddenException);
+    expect(paymentsClient.createPayment).not.toHaveBeenCalled();
+  });
+
+  it('should confirm payment through payments client', async () => {
+    paymentsClient.confirmPayment.mockReturnValueOnce(of(payment));
+    reservationsClient.findOne.mockReturnValueOnce(of(reservation));
+
+    await expect(
+      controller.confirmReservationPayment(
+        {
+          paymentIntentId: '1',
+          paymentMethodId: '1',
+        },
+        '1',
+        user,
+      ),
     ).resolves.toEqual(payment);
     expect(paymentsClient.confirmPayment).toHaveBeenCalled();
   });

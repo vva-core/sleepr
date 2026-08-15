@@ -5,11 +5,11 @@
 // source: reservation.proto
 
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
-import { Empty } from './google/protobuf/empty';
+import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
+import { Empty } from "./google/protobuf/empty";
 
-export const protobufPackage = 'reservations';
+export const protobufPackage = "reservations";
 
 export enum ReservationStatus {
   RESERVATION_STATUS_UNSPECIFIED = 0,
@@ -57,7 +57,7 @@ export interface RemoveReservationRequest {
   id: string;
 }
 
-export const RESERVATIONS_PACKAGE_NAME = 'reservations';
+export const RESERVATIONS_PACKAGE_NAME = "reservations";
 
 export interface ReservationServiceClient {
   create(request: CreateReservationRequest): Observable<Reservation>;
@@ -72,63 +72,30 @@ export interface ReservationServiceClient {
 }
 
 export interface ReservationServiceController {
-  create(
-    request: CreateReservationRequest,
-  ): Promise<Reservation> | Observable<Reservation> | Reservation;
+  create(request: CreateReservationRequest): Promise<Reservation> | Observable<Reservation> | Reservation;
 
-  findAll(
-    request: Empty,
-  ):
-    | Promise<ReservationsList>
-    | Observable<ReservationsList>
-    | ReservationsList;
+  findAll(request: Empty): Promise<ReservationsList> | Observable<ReservationsList> | ReservationsList;
 
-  findOne(
-    request: FindOneReservationRequest,
-  ): Promise<Reservation> | Observable<Reservation> | Reservation;
+  findOne(request: FindOneReservationRequest): Promise<Reservation> | Observable<Reservation> | Reservation;
 
-  update(
-    request: UpdateReservationRequest,
-  ): Promise<Reservation> | Observable<Reservation> | Reservation;
+  update(request: UpdateReservationRequest): Promise<Reservation> | Observable<Reservation> | Reservation;
 
-  remove(
-    request: RemoveReservationRequest,
-  ): Promise<Reservation> | Observable<Reservation> | Reservation;
+  remove(request: RemoveReservationRequest): Promise<Reservation> | Observable<Reservation> | Reservation;
 }
 
 export function ReservationServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = [
-      'create',
-      'findAll',
-      'findOne',
-      'update',
-      'remove',
-    ];
+    const grpcMethods: string[] = ["create", "findAll", "findOne", "update", "remove"];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(
-        constructor.prototype,
-        method,
-      );
-      GrpcMethod('ReservationService', method)(
-        constructor.prototype[method],
-        method,
-        descriptor,
-      );
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("ReservationService", method)(constructor.prototype[method], method, descriptor);
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(
-        constructor.prototype,
-        method,
-      );
-      GrpcStreamMethod('ReservationService', method)(
-        constructor.prototype[method],
-        method,
-        descriptor,
-      );
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("ReservationService", method)(constructor.prototype[method], method, descriptor);
     }
   };
 }
 
-export const RESERVATION_SERVICE_NAME = 'ReservationService';
+export const RESERVATION_SERVICE_NAME = "ReservationService";

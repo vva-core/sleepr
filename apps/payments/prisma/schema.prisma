@@ -29,5 +29,5 @@ model Payments {
     amount                Float
     status                PaymentStatus @default(PENDING)
     createdAt             DateTime      @default(now())
-    stripePaymentIntentId String
+    stripePaymentIntentId String?
 }

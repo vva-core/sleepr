@@ -43,6 +43,7 @@ export interface CreatePaymentResponse {
 export interface ConfirmPaymentRequest {
   paymentIntentId: string;
   paymentMethodId: string;
+  reservationId: string;
 }
 
 export const PAYMENTS_PACKAGE_NAME = 'payments';

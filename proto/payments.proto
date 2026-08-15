@@ -39,4 +39,7 @@ message CreatePaymentResponse {
 message ConfirmPaymentRequest {
   string payment_intent_id = 1;
   string payment_method_id = 2;
+  // The gateway proves the caller owns this reservation; payments proves the
+  // intent belongs to it. Neither check is sufficient alone.
+  string reservation_id = 3;
 }

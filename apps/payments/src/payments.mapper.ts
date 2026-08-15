@@ -74,7 +74,7 @@ export function toProtoPayment(row: Payments): Payment {
     amount: row.amount,
     status: toProtoPaymentStatus(row.status),
     createdAt: row.createdAt.toISOString(),
-    stripePaymentIntentId: row.stripePaymentIntentId,
+    stripePaymentIntentId: row.stripePaymentIntentId ?? '',
   };
 }
 
