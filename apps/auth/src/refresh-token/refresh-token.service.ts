@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { RefreshToken } from '@app/common/prisma/generated/prisma';
+import { RefreshToken } from '../prisma/generated';
 import { RefreshTokenRepository } from './refresh-token.repository';
 
 @Injectable()

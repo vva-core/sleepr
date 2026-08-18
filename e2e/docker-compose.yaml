@@ -35,7 +35,7 @@ services:
     image: 805102730154.dkr.ecr.eu-north-1.amazonaws.com/sleepr/auth
     ports:
       - '3001:3001'
-    command: sh -c "npx prisma migrate deploy && node dist/apps/auth/main"
+    command: sh -c "npx prisma migrate deploy --config apps/auth/prisma.config.ts && node dist/apps/auth/main"
     env_file:
       - ../apps/auth/.env
     depends_on:

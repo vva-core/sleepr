@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { IBaseRepository, PrismaService } from '@app/common';
-import { Prisma, RefreshToken } from '@app/common/prisma/generated/prisma';
+import { IBaseRepository } from '@app/common';
+import { AuthPrismaService } from '../database/auth-prisma.service';
+import { Prisma, RefreshToken } from '../prisma/generated';
 
 export type CreateRefreshTokenInput = Prisma.RefreshTokenUncheckedCreateInput;
 export type UpdateRefreshTokenInput = Prisma.RefreshTokenUncheckedUpdateInput;
@@ -11,7 +12,7 @@ export class RefreshTokenRepository implements IBaseRepository<
   CreateRefreshTokenInput,
   UpdateRefreshTokenInput
 > {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: AuthPrismaService) {}
 
   async create(data: CreateRefreshTokenInput): Promise<RefreshToken> {
     return await this.prisma.refreshToken.create({ data });

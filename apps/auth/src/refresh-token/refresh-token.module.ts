@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from '@app/common';
+import { AuthDatabaseModule } from '../database/auth-database.module';
 import { RefreshTokenRepository } from './refresh-token.repository';
 import { RefreshTokenService } from './refresh-token.service';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [AuthDatabaseModule],
   providers: [RefreshTokenService, RefreshTokenRepository],
   exports: [RefreshTokenService],
 })

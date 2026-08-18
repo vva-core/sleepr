@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as bcrypt from 'bcryptjs';
-import { RefreshToken } from '@app/common/prisma/generated/prisma';
+import { RefreshToken } from '../prisma/generated';
 import { RefreshTokenService } from './refresh-token.service';
 import { RefreshTokenRepository } from './refresh-token.repository';
 
