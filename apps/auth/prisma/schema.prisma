@@ -1,0 +1,42 @@
+// Auth owns this schema exclusively. It is the last extraction: once it lands there is no
+// root schema left, and no shared Prisma client in libs/common.
+//
+// Unlike the payments and reservations extractions, no foreign key is severed here.
+// User and RefreshToken move together into the same database, so their relation stays a
+// real relation — the cascade on delete included. The references that *were* severed point
+// the other way: Reservation.userId and Payments.reservationId are plain scalars in their
+// own schemas, and nothing in this file knows about them.
+
+generator client {
+    provider     = "prisma-client-js"
+    output       = "../src/prisma/generated"
+    moduleFormat = "cjs"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+    id        String   @id @default(cuid())
+    email     String   @unique
+    password  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    roles     String[] @default(["user"])
+
+    refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+    id        String    @id
+    userId    String
+    tokenHash String
+    expiresAt DateTime
+    revokedAt DateTime?
+    createdAt DateTime  @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}
