@@ -7,18 +7,18 @@ NestJS monorepo for a hotel reservation system. Services are organized by respon
 - **gateway** — API gateway / entry point for client traffic (WIP)
 - **auth** — issues and validates JWTs; exposed to other services over gRPC
 - **domain services** — reservations, payments (Stripe), notifications (email), etc.
-- **common lib** (`libs/common`) — shared building blocks: database (Prisma) module, JWT guard & auth decorators, RabbitMQ topology helpers, logger, and shared DTOs
+- **common lib** (`libs/common`) — shared building blocks: JWT guard & auth decorators, RabbitMQ topology helpers, logger, the base repository contract, and shared DTOs
 
 **Communication:**
 
 - **gRPC** for synchronous inter-service calls (e.g. token validation)
 - **RabbitMQ topic exchange** for async event-driven flows (e.g. payment events fan out to subscribers)
 
-All services share one PostgreSQL database via Prisma. Proto definitions live in `/proto`.
+Each service owns its own PostgreSQL database, Prisma schema and migration history. Proto definitions live in `/proto`.
 
 ## Infrastructure
 
-- **Containerization** — Each service has a multi-stage `Dockerfile` (separate development and production targets), built from the repo root so shared libraries and the Prisma schema are in build context.
+- **Containerization** — Each service has a multi-stage `Dockerfile` (separate development and production targets), built from the repo root so shared libraries and the service's Prisma schema are in build context.
 - **Local development** — `docker-compose` runs the full stack on the development target with source bind-mounted for hot reload, alongside Postgres, RabbitMQ, and a database admin UI. Database migrations run automatically on startup.
 - **End-to-end tests** — A separate compose setup runs prebuilt production images with health checks.
 - **CI/CD** — AWS CodeBuild builds service images and pushes them to Amazon ECR.

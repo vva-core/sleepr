@@ -5,10 +5,10 @@
 // source: payments.proto
 
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
 
-export const protobufPackage = 'payments';
+export const protobufPackage = "payments";
 
 export enum PaymentStatus {
   PAYMENT_STATUS_UNSPECIFIED = 0,
@@ -43,15 +43,17 @@ export interface CreatePaymentResponse {
 export interface ConfirmPaymentRequest {
   paymentIntentId: string;
   paymentMethodId: string;
+  /**
+   * The gateway proves the caller owns this reservation; payments proves the
+   * intent belongs to it. Neither check is sufficient alone.
+   */
   reservationId: string;
 }
 
-export const PAYMENTS_PACKAGE_NAME = 'payments';
+export const PAYMENTS_PACKAGE_NAME = "payments";
 
 export interface PaymentsServiceClient {
-  createPayment(
-    request: CreatePaymentRequest,
-  ): Observable<CreatePaymentResponse>;
+  createPayment(request: CreatePaymentRequest): Observable<CreatePaymentResponse>;
 
   confirmPayment(request: ConfirmPaymentRequest): Observable<Payment>;
 }
@@ -59,43 +61,24 @@ export interface PaymentsServiceClient {
 export interface PaymentsServiceController {
   createPayment(
     request: CreatePaymentRequest,
-  ):
-    | Promise<CreatePaymentResponse>
-    | Observable<CreatePaymentResponse>
-    | CreatePaymentResponse;
+  ): Promise<CreatePaymentResponse> | Observable<CreatePaymentResponse> | CreatePaymentResponse;
 
-  confirmPayment(
-    request: ConfirmPaymentRequest,
-  ): Promise<Payment> | Observable<Payment> | Payment;
+  confirmPayment(request: ConfirmPaymentRequest): Promise<Payment> | Observable<Payment> | Payment;
 }
 
 export function PaymentsServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['createPayment', 'confirmPayment'];
+    const grpcMethods: string[] = ["createPayment", "confirmPayment"];
     for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(
-        constructor.prototype,
-        method,
-      );
-      GrpcMethod('PaymentsService', method)(
-        constructor.prototype[method],
-        method,
-        descriptor,
-      );
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("PaymentsService", method)(constructor.prototype[method], method, descriptor);
     }
     const grpcStreamMethods: string[] = [];
     for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(
-        constructor.prototype,
-        method,
-      );
-      GrpcStreamMethod('PaymentsService', method)(
-        constructor.prototype[method],
-        method,
-        descriptor,
-      );
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("PaymentsService", method)(constructor.prototype[method], method, descriptor);
     }
   };
 }
 
-export const PAYMENTS_SERVICE_NAME = 'PaymentsService';
+export const PAYMENTS_SERVICE_NAME = "PaymentsService";

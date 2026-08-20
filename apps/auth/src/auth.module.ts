@@ -6,7 +6,8 @@ import { UserService } from './user/user.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import Joi from 'joi';
-import { DatabaseModule, HealthModule, LoggerModule } from '@app/common';
+import { HealthModule, LoggerModule } from '@app/common';
+import { AuthDatabaseModule } from './database/auth-database.module';
 import { UserRepository } from './user/user.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
@@ -15,7 +16,7 @@ import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 
 @Module({
   imports: [
-    DatabaseModule,
+    AuthDatabaseModule,
     HealthModule,
     LoggerModule,
     UserModule,

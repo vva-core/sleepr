@@ -1,11 +1,15 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Auth owns this schema exclusively. It is the last extraction: once it lands there is no
+// root schema left, and no shared Prisma client in libs/common.
+//
+// Unlike the payments and reservations extractions, no foreign key is severed here.
+// User and RefreshToken move together into the same database, so their relation stays a
+// real relation — the cascade on delete included. The references that *were* severed point
+// the other way: Reservation.userId and Payments.reservationId are plain scalars in their
+// own schemas, and nothing in this file knows about them.
 
 generator client {
     provider     = "prisma-client-js"
-    output       = "../libs/common/src/prisma/generated/prisma"
+    output       = "../src/prisma/generated"
     moduleFormat = "cjs"
 }
 

@@ -7,8 +7,6 @@ COPY yarn.lock ./
 COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 COPY apps/auth/package.json apps/auth/package.json
-COPY prisma ./prisma
-COPY prisma.config.ts prisma.config.ts
 
 COPY apps/auth apps/auth
 COPY libs libs
@@ -16,7 +14,7 @@ COPY libs libs
 RUN yarn install
 RUN cd apps/auth && yarn install
 
-RUN npx prisma generate
+RUN npx prisma generate --config apps/auth/prisma.config.ts
 RUN yarn build auth
 
 FROM node:22-alpine AS production
@@ -29,8 +27,8 @@ ENV NODE_ENV=${NODE_ENV}
 COPY --from=development /usr/src/app/dist ./dist
 COPY --from=development /usr/src/app/node_modules ./node_modules
 COPY --from=development /usr/src/app/apps/auth/node_modules ./apps/auth/node_modules
-COPY --from=development /usr/src/app/prisma ./prisma
-COPY --from=development /usr/src/app/prisma.config.ts ./prisma.config.ts
+COPY --from=development /usr/src/app/apps/auth/prisma ./apps/auth/prisma
+COPY --from=development /usr/src/app/apps/auth/prisma.config.ts ./apps/auth/prisma.config.ts
 
 COPY proto proto
 

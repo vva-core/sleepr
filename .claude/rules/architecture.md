@@ -16,12 +16,12 @@ For the descriptive tour of what each piece _is_, see `CLAUDE.md` → Architectu
 
 Layers of the system:
 
-| Layer          | Location      | What lives here                                                                   |
-| -------------- | ------------- | --------------------------------------------------------------------------------- |
-| Services       | `apps/*`      | Deployable NestJS processes: gateway, auth, reservations, payments, notifications |
-| Shared library | `libs/common` | Modules + primitives imported via the `@app/common` alias                         |
-| Contracts      | `proto/`      | gRPC service/message contracts (governed by `COMM-*`)                             |
-| Data           | `prisma/`, `apps/*/prisma/` | Per-owner schema + migration history; client generated beside its owner |
+| Layer          | Location         | What lives here                                                                   |
+| -------------- | ---------------- | --------------------------------------------------------------------------------- |
+| Services       | `apps/*`         | Deployable NestJS processes: gateway, auth, reservations, payments, notifications |
+| Shared library | `libs/common`    | Modules + primitives imported via the `@app/common` alias                         |
+| Contracts      | `proto/`         | gRPC service/message contracts (governed by `COMM-*`)                             |
+| Data           | `apps/*/prisma/` | Each service's own schema + migration history; client generated beside its owner  |
 
 ---
 
@@ -30,7 +30,7 @@ Layers of the system:
 - Deployable services live under `apps/`; shared building blocks live under
   `libs/common` and are consumed through the `@app/common` path alias — the barrel
   (`@app/common`) for public modules, documented subpaths for the rest
-  (`@app/common/consts`, `/types/proto`, `/publishers`, `/rmq`, `/prisma/generated`).
+  (`@app/common/consts`, `/types/proto`, `/publishers`, `/rmq`, `/guards`).
 - A service MUST NOT import another service's `apps/*` code. Anything two services
   both need moves into `libs/common`.
 - This covers _static_ dependencies only. When one service needs another at
@@ -76,15 +76,12 @@ env shared/mutated across services; environment access outside the owning servic
 - **Database-per-service is the target state.** A service that owns its data owns the
   whole vertical: its `apps/<svc>/prisma/schema.prisma`, its own migration history, its
   own generated client (`apps/<svc>/src/prisma/generated`), its own `DATABASE_URL`, and
-  its own Prisma module + service under `apps/<svc>/src/database/`. **payments** and
-  **reservations** are fully extracted and are the reference implementations.
-- _Migration note:_ **auth alone still uses** the root `prisma/schema.prisma`, the `sleepr`
-  database, and the `DatabaseModule`/`PrismaService` in `libs/common`. That is legacy, not
-  the pattern to copy — and with one consumer left, the shared copies exist only until auth
-  is extracted too. Flag **new** models added to the root schema by a service that should
-  own them; do not flag the pre-existing surface.
+  its own Prisma module + service under `apps/<svc>/src/database/`. Every service that owns
+  data is extracted; there is no root schema and no shared Prisma client.
+- **No shared databases.** From now on, every service has its own database. A common
+  database is not created or enforced at the `libs/common` level, nor inside any service.
 - **A model belongs to exactly one schema file.** Cross-service relations are not
-  merely discouraged — across separate databases a foreign key is *unexpressible*.
+  merely discouraged — across separate databases a foreign key is _unexpressible_.
   Where one used to be, the reference survives as a plain scalar id, and existence is
   checked over gRPC (`COMM-4`), not by the database.
 - Every service that talks to a DB implements the Repository pattern, and every
@@ -96,8 +93,8 @@ env shared/mutated across services; environment access outside the owning servic
 
 **Violation:** a Prisma service injected into a controller or service; a service running
 Prisma/SQL queries instead of going through its repository; a repository that does not
-implement `IBaseRepository`; an extracted service reaching back into the shared client or
-root schema; a relation declared across two services' models.
+implement `IBaseRepository`; a service reading another service's schema, client or
+`DATABASE_URL`; a relation declared across two services' models.
 
 ## ARCH-5: Cross-cutting concerns come from `libs/common`, not reimplemented
 
@@ -105,9 +102,11 @@ root schema; a relation declared across two services' models.
   gRPC-backed `JwtAuthGuard`, param decorators (`CurrentUser`, `Roles`), and the
   RabbitMQ `BasePublisher` are provided once in `libs/common` and imported by services.
 - A service MUST reuse these shared primitives rather than reimplementing them.
-- `DatabaseModule` / `PrismaService` are **not** in this list. Database access is owned
-  per service (`ARCH-4`); the shared copies exist only for the services not yet
-  extracted. A per-service Prisma module is the pattern, not a duplication.
+- Database access is deliberately **not** in this list. It is owned per service
+  (`ARCH-4`): each service writes its own Prisma module and service. That is the pattern,
+  not a duplication — a shared `DatabaseModule` would recouple every service to one client.
+  `IBaseRepository` is the one database concern that stays shared, because it is a contract
+  and not a connection.
 
 **Violation:** a service defining its own logger, `/health` endpoint, or auth guard; a
 second publisher base class; bespoke copies of shared decorators.

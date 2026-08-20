@@ -3,7 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PublicUser } from './user/interfaces/user.interface';
 import { UserService } from './user/user.service';
-import { User } from '@app/common/prisma/generated/prisma';
+import { User } from './prisma/generated';
 import { toProtoUser } from './user/user.mapper';
 import { RefreshSession } from './refresh-token/interfaces/refresh-session.interface';
 

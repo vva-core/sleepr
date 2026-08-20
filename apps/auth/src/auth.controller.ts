@@ -12,7 +12,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthService } from './auth.service';
 import { UserService } from './user/user.service';
 import { toProtoUser } from './user/user.mapper';
-import type { User } from '@app/common/prisma/generated/prisma';
+import type { User } from './prisma/generated';
 import type { RefreshSession } from './refresh-token/interfaces/refresh-session.interface';
 import { CurrentRefreshSession } from './refresh-token/decorators/current-refresh-session.decorator';
 

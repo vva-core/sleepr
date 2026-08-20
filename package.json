@@ -10,7 +10,7 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "migrate:dev": "dotenv -e .env.local -- npx prisma migrate dev",
+    "migrate:auth": "npx prisma migrate dev --config apps/auth/prisma.config.ts",
     "migrate:payments": "npx prisma migrate dev --config apps/payments/prisma.config.ts",
     "migrate:reservations": "npx prisma migrate dev --config apps/reservations/prisma.config.ts",
     "start:debug": "nest start --debug --watch",
