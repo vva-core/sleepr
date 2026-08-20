@@ -17,7 +17,6 @@ const user: User = {
   createdAt: '',
   email: 'test@gmail.com',
   id: '1',
-  reservations: [],
   roles: [],
   updatedAt: '',
 };

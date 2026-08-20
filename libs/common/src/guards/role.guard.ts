@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
-import { User } from '../prisma/generated/prisma';
+import { User } from '../types/proto/auth';
 
 const matchRoles = (user: User, roles: string[]) => {
   return roles.some((role) => user.roles.includes(role));

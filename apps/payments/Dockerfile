@@ -30,4 +30,6 @@ COPY --from=development /usr/src/app/apps/payments/node_modules ./apps/payments/
 COPY --from=development /usr/src/app/apps/payments/prisma ./apps/payments/prisma
 COPY --from=development /usr/src/app/apps/payments/prisma.config.ts ./apps/payments/prisma.config.ts
 
+COPY proto proto
+
 CMD ["node", "dist/apps/payments/main.js"]

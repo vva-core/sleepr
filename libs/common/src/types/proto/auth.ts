@@ -7,7 +7,6 @@
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
-import { Reservation } from "./reservation";
 
 export const protobufPackage = "auth";
 
@@ -48,7 +47,6 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   roles: string[];
-  reservations: Reservation[];
 }
 
 export const AUTH_PACKAGE_NAME = "auth";

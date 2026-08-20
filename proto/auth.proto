@@ -1,8 +1,6 @@
 syntax = "proto3";
 package auth;
 
-import "reservation.proto";
-
 service AuthService {
   rpc authenticate (Authentication) returns (User);
   rpc login (LoginRequest) returns (LoginResponse);
@@ -49,5 +47,7 @@ message User {
     string created_at = 3;
     string updated_at = 4;
     repeated string roles = 5;
-    repeated reservations.Reservation reservations = 6;
+
+    reserved 6;
+    reserved "reservations";
 }

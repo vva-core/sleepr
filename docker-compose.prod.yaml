@@ -1,0 +1,94 @@
+# Runs the production stage of every service locally — no ECR, no push.
+# Images are built from the same Dockerfiles CI uses, but with target: production
+# and no bind mounts, so what runs is what the image actually contains.
+#   docker compose -f docker-compose.prod.yaml up --build
+
+services:
+  auth:
+    build:
+      context: .
+      dockerfile: apps/auth/Dockerfile
+      target: production
+    ports:
+      - '3001:3001'
+    command: sh -c "npx prisma migrate deploy --config apps/auth/prisma.config.ts && node dist/apps/auth/main"
+    env_file:
+      - apps/auth/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  reservations:
+    build:
+      context: .
+      dockerfile: apps/reservations/Dockerfile
+      target: production
+    ports:
+      - '3000:3000'
+    command: sh -c "npx prisma migrate deploy --config apps/reservations/prisma.config.ts && node dist/apps/reservations/main"
+    env_file:
+      - apps/reservations/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  payments:
+    build:
+      context: .
+      dockerfile: apps/payments/Dockerfile
+      target: production
+    ports:
+      - '50053:50053'
+    command: sh -c "npx prisma migrate deploy --config apps/payments/prisma.config.ts && node dist/apps/payments/main"
+    env_file:
+      - apps/payments/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  notifications:
+    build:
+      context: .
+      dockerfile: apps/notifications/Dockerfile
+      target: production
+    command: node dist/apps/notifications/main
+    env_file:
+      - apps/notifications/.env
+    depends_on:
+      - rabbitmq
+
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+      target: production
+    ports:
+      - '3003:3003'
+    command: node dist/apps/gateway/main
+    env_file:
+      - apps/gateway/.env
+
+  postgres:
+    image: postgres:16
+    env_file:
+      - .env
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:

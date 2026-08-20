@@ -30,4 +30,6 @@ COPY --from=development /usr/src/app/apps/reservations/node_modules ./apps/reser
 COPY --from=development /usr/src/app/apps/reservations/prisma ./apps/reservations/prisma
 COPY --from=development /usr/src/app/apps/reservations/prisma.config.ts ./apps/reservations/prisma.config.ts
 
+COPY proto proto
+
 CMD ["node", "dist/apps/reservations/main.js"]
